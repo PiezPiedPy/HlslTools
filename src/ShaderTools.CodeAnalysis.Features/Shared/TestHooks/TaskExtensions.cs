@@ -29,9 +29,9 @@ namespace ShaderTools.CodeAnalysis.Shared.TestHooks
 
             return task.SafeContinueWith(
                 t => token.Dispose(),
-                CancellationToken.None,
                 TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Default);
+                TaskScheduler.Default,
+                CancellationToken.None);
         }
     }
 }

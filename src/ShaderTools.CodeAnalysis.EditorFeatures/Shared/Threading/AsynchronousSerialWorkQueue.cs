@@ -84,14 +84,14 @@ namespace ShaderTools.CodeAnalysis.Editor.Shared.Threading
                     // simultaneously.
                     _currentBackgroundTask = _currentBackgroundTask.SafeContinueWith(
                         _ => action(),
-                        cancellationToken,
                         TaskContinuationOptions.None,
-                        TaskScheduler.Default);
+                        TaskScheduler.Default,
+                        cancellationToken);
                 }
                 else
                 {
                     _currentBackgroundTask = _currentBackgroundTask.ContinueWithAfterDelay(
-                        action, cancellationToken, afterDelay, TaskContinuationOptions.None, TaskScheduler.Default);
+                        action, afterDelay, TaskContinuationOptions.None, TaskScheduler.Default, cancellationToken);
                 }
 
                 _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
@@ -123,18 +123,18 @@ namespace ShaderTools.CodeAnalysis.Editor.Shared.Threading
                     // simultaneously.
                     _currentBackgroundTask = _currentBackgroundTask.SafeContinueWithFromAsync(
                         _ => taskGeneratingFunctionAsync(cancellationToken),
-                        cancellationToken,
                         TaskContinuationOptions.None,
-                        TaskScheduler.Default);
+                        TaskScheduler.Default,
+                        cancellationToken);
                 }
                 else
                 {
                     _currentBackgroundTask = _currentBackgroundTask.ContinueWithAfterDelayFromAsync(
                         _ => taskGeneratingFunctionAsync(cancellationToken),
-                        cancellationToken,
                         afterDelay,
                         TaskContinuationOptions.None,
-                        TaskScheduler.Default);
+                        TaskScheduler.Default,
+                        cancellationToken);
                 }
 
                 _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
