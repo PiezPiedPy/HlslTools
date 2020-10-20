@@ -150,7 +150,7 @@ namespace ShaderTools.CodeAnalysis.Host
                             _workMap = _workMap.Remove(document.Id);
                         }
                     }
-                }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+                }, TaskContinuationOptions.None, TaskScheduler.Default, CancellationToken.None);
         }
     }
 }

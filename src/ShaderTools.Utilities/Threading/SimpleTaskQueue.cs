@@ -48,28 +48,28 @@ namespace ShaderTools.Utilities.Threading
         public Task ScheduleTask(Action taskAction, CancellationToken cancellationToken = default(CancellationToken))
         {
             return ScheduleTaskWorker<Task>(delay => _latestTask.ContinueWithAfterDelay(
-                taskAction, cancellationToken, delay, TaskContinuationOptions.None, _taskScheduler),
+                taskAction, delay, TaskContinuationOptions.None, _taskScheduler, cancellationToken),
                 cancellationToken);
         }
 
         public Task<T> ScheduleTask<T>(Func<T> taskFunc, CancellationToken cancellationToken = default(CancellationToken))
         {
             return ScheduleTaskWorker<Task<T>>(delay => _latestTask.ContinueWithAfterDelay(
-                t => taskFunc(), cancellationToken, delay, TaskContinuationOptions.None, _taskScheduler),
+                t => taskFunc(), delay, TaskContinuationOptions.None, _taskScheduler, cancellationToken),
                 cancellationToken);
         }
 
         public Task ScheduleTask(Func<Task> taskFuncAsync, CancellationToken cancellationToken = default(CancellationToken))
         {
             return ScheduleTaskWorker<Task>(delay => _latestTask.ContinueWithAfterDelayFromAsync(
-                t => taskFuncAsync(), cancellationToken, delay, TaskContinuationOptions.None, _taskScheduler),
+                t => taskFuncAsync(), delay, TaskContinuationOptions.None, _taskScheduler, cancellationToken),
                 cancellationToken);
         }
 
         public Task<T> ScheduleTask<T>(Func<Task<T>> taskFuncAsync, CancellationToken cancellationToken = default(CancellationToken))
         {
             return ScheduleTaskWorker<Task<T>>(delay => _latestTask.ContinueWithAfterDelayFromAsync(
-                t => taskFuncAsync(), cancellationToken, delay, TaskContinuationOptions.None, _taskScheduler),
+                t => taskFuncAsync(), delay, TaskContinuationOptions.None, _taskScheduler, cancellationToken),
                 cancellationToken);
         }
 

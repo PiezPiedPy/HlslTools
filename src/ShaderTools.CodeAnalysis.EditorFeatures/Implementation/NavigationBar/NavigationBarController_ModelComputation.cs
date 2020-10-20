@@ -50,9 +50,9 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigationBar
                 Task.Delay(modelUpdateDelay, cancellationToken)
                     .SafeContinueWithFromAsync(
                         _ => ComputeModelAsync(document, textSnapshot, cancellationToken),
-                        cancellationToken,
                         TaskContinuationOptions.OnlyOnRanToCompletion,
-                        TaskScheduler.Default);
+                        TaskScheduler.Default,
+                        cancellationToken);
             _modelTask.CompletesAsyncOperation(asyncToken);
 
             StartSelectedItemUpdateTask(selectedItemUpdateDelay, updateUIWhenDone);
@@ -133,10 +133,10 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigationBar
             _selectedItemInfoTask = _modelTask.ContinueWithAfterDelay(
                 t => t.IsCanceled ? new NavigationBarSelectedTypeAndMember(null, null)
                     : ComputeSelectedTypeAndMember(t.Result, subjectBufferCaretPosition.Value, cancellationToken),
-                cancellationToken,
                 delay,
                 TaskContinuationOptions.None,
-                TaskScheduler.Default);
+                TaskScheduler.Default,
+                cancellationToken);
             _selectedItemInfoTask.CompletesAsyncOperation(asyncToken);
 
             if (updateUIWhenDone)
@@ -144,9 +144,9 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigationBar
                 asyncToken = _asyncListener.BeginAsyncOperation(GetType().Name + ".StartSelectedItemUpdateTask.UpdateUI");
                 _selectedItemInfoTask.SafeContinueWith(
                     t => PushSelectedItemsToPresenter(t.Result),
-                    cancellationToken,
                     TaskContinuationOptions.OnlyOnRanToCompletion,
-                    ForegroundTaskScheduler).CompletesAsyncOperation(asyncToken);
+                    ForegroundTaskScheduler,
+                    cancellationToken).CompletesAsyncOperation(asyncToken);
             }
         }
 

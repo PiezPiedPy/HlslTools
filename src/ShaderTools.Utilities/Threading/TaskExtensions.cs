@@ -39,7 +39,7 @@ namespace ShaderTools.Utilities.Threading
         }
 
         // Only call this *extremely* special situations.  This will synchronously block a threadpool
-        // thread.  In the future we are going ot be removing this and disallowing its use.
+        // thread.  In the future we are going to be removing this and disallowing its use.
         public static T WaitAndGetResult_CanCallOnBackground<T>(this Task<T> task, CancellationToken cancellationToken)
         {
             task.Wait(cancellationToken);
@@ -68,9 +68,9 @@ namespace ShaderTools.Utilities.Threading
         public static Task SafeContinueWith(
             this Task task,
             Action<Task> continuationAction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             Func<Task, bool> continuationFunction = antecedent =>
             {
@@ -78,37 +78,37 @@ namespace ShaderTools.Utilities.Threading
                 return true;
             };
 
-            return task.SafeContinueWith(continuationFunction, cancellationToken, continuationOptions, scheduler);
+            return task.SafeContinueWith(continuationFunction, continuationOptions, scheduler, cancellationToken);
         }
 
         public static Task<TResult> SafeContinueWith<TInput, TResult>(
             this Task<TInput> task,
             Func<Task<TInput>, TResult> continuationFunction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith<TResult>(
-                (Task antecedent) => continuationFunction((Task<TInput>)antecedent), cancellationToken, continuationOptions, scheduler);
+                (Task antecedent) => continuationFunction((Task<TInput>)antecedent), continuationOptions, scheduler, cancellationToken);
         }
 
         public static Task SafeContinueWith<TInput>(
             this Task<TInput> task,
             Action<Task<TInput>> continuationAction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(
-                (Task antecedent) => continuationAction((Task<TInput>)antecedent), cancellationToken, continuationOptions, scheduler);
+                (Task antecedent) => continuationAction((Task<TInput>)antecedent), continuationOptions, scheduler, cancellationToken);
         }
 
         public static Task<TResult> SafeContinueWith<TResult>(
             this Task task,
             Func<Task, TResult> continuationFunction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             // So here's the deal.  Say you do the following:
 #if false
@@ -148,62 +148,62 @@ namespace ShaderTools.Utilities.Threading
         public static Task<TResult> ContinueWithAfterDelay<TInput, TResult>(
             this Task<TInput> task,
             Func<Task<TInput>, TResult> continuationFunction,
-            CancellationToken cancellationToken,
             int millisecondsDelay,
             TaskContinuationOptions taskContinuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(t =>
                 Task.Delay(millisecondsDelay, cancellationToken).SafeContinueWith(
-                    _ => continuationFunction(t), cancellationToken, TaskContinuationOptions.None, scheduler),
-                cancellationToken, taskContinuationOptions, scheduler).Unwrap();
+                    _ => continuationFunction(t), TaskContinuationOptions.None, scheduler, cancellationToken),
+                taskContinuationOptions, scheduler, cancellationToken).Unwrap();
         }
 
         public static Task<TNResult> ContinueWithAfterDelay<TNResult>(
             this Task task,
             Func<Task, TNResult> continuationFunction,
-            CancellationToken cancellationToken,
             int millisecondsDelay,
             TaskContinuationOptions taskContinuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(t =>
                 Task.Delay(millisecondsDelay, cancellationToken).SafeContinueWith(
-                    _ => continuationFunction(t), cancellationToken, TaskContinuationOptions.None, scheduler),
-                cancellationToken, taskContinuationOptions, scheduler).Unwrap();
+                    _ => continuationFunction(t), TaskContinuationOptions.None, scheduler, cancellationToken),
+                taskContinuationOptions, scheduler, cancellationToken).Unwrap();
         }
 
         public static Task ContinueWithAfterDelay(
             this Task task,
             Action continuationAction,
-            CancellationToken cancellationToken,
             int millisecondsDelay,
             TaskContinuationOptions taskContinuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(t =>
                 Task.Delay(millisecondsDelay, cancellationToken).SafeContinueWith(
-                    _ => continuationAction(), cancellationToken, TaskContinuationOptions.None, scheduler),
-                cancellationToken, taskContinuationOptions, scheduler).Unwrap();
+                    _ => continuationAction(), TaskContinuationOptions.None, scheduler, cancellationToken),
+                taskContinuationOptions, scheduler, cancellationToken).Unwrap();
         }
 
         public static Task<TResult> SafeContinueWithFromAsync<TInput, TResult>(
             this Task<TInput> task,
             Func<Task<TInput>, Task<TResult>> continuationFunction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWithFromAsync<TResult>(
-                (Task antecedent) => continuationFunction((Task<TInput>)antecedent), cancellationToken, continuationOptions, scheduler);
+                (Task antecedent) => continuationFunction((Task<TInput>)antecedent), continuationOptions, scheduler, cancellationToken);
         }
 
         public static Task<TResult> SafeContinueWithFromAsync<TResult>(
             this Task task,
             Func<Task, Task<TResult>> continuationFunction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             // So here's the deal.  Say you do the following:
 #if false
@@ -236,9 +236,9 @@ namespace ShaderTools.Utilities.Threading
         public static Task SafeContinueWithFromAsync(
             this Task task,
             Func<Task, Task> continuationFunction,
-            CancellationToken cancellationToken,
             TaskContinuationOptions continuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             // So here's the deal.  Say you do the following:
 #if false
@@ -266,29 +266,29 @@ namespace ShaderTools.Utilities.Threading
         public static Task<TNResult> ContinueWithAfterDelayFromAsync<TNResult>(
             this Task task,
             Func<Task, Task<TNResult>> continuationFunction,
-            CancellationToken cancellationToken,
             int millisecondsDelay,
             TaskContinuationOptions taskContinuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(t =>
                 Task.Delay(millisecondsDelay, cancellationToken).SafeContinueWithFromAsync(
-                    _ => continuationFunction(t), cancellationToken, TaskContinuationOptions.None, scheduler),
-                cancellationToken, taskContinuationOptions, scheduler).Unwrap();
+                    _ => continuationFunction(t), TaskContinuationOptions.None, scheduler, cancellationToken),
+                taskContinuationOptions, scheduler, cancellationToken).Unwrap();
         }
 
         public static Task ContinueWithAfterDelayFromAsync(
             this Task task,
             Func<Task, Task> continuationFunction,
-            CancellationToken cancellationToken,
             int millisecondsDelay,
             TaskContinuationOptions taskContinuationOptions,
-            TaskScheduler scheduler)
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken)
         {
             return task.SafeContinueWith(t =>
                 Task.Delay(millisecondsDelay, cancellationToken).SafeContinueWithFromAsync(
-                    _ => continuationFunction(t), cancellationToken, TaskContinuationOptions.None, scheduler),
-                cancellationToken, taskContinuationOptions, scheduler).Unwrap();
+                    _ => continuationFunction(t), TaskContinuationOptions.None, scheduler, cancellationToken),
+                taskContinuationOptions, scheduler, cancellationToken).Unwrap();
         }
 
         internal static void ReportFatalError(Task task, object continuationFunction)
