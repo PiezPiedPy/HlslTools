@@ -37,6 +37,8 @@ namespace ShaderTools.VisualStudio.LanguageServices.Hlsl
     [ProvideLanguageExtension(typeof(HlslLanguageService), ".psh")]
     [ProvideLanguageExtension(typeof(HlslLanguageService), ".cginc")]
     [ProvideLanguageExtension(typeof(HlslLanguageService), ".compute")]
+    [ProvideLanguageExtension(typeof(HlslLanguageService), ".ush")]        // Unreal shader header
+    [ProvideLanguageExtension(typeof(HlslLanguageService), ".usf")]        // Unreal shader file
 
     // Adds support for user mapping of custom file extensions.
     [ProvideFileExtensionMapping(
