@@ -58,8 +58,10 @@ namespace ShaderTools.VisualStudio.LanguageServices.Classification
 
         public Color GetDefaultColor(string category)
         {
-            var currentTheme = _themeManager.GetCurrentTheme();
-            return _themeColors[currentTheme][category];
+            try { return _themeColors[_themeManager.GetCurrentTheme()][category]; }
+            catch { }
+
+            return Color.FromRgb(0, 0, 0);
         }
 
         public void UpdateColors()
