@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Server;
 using Serilog;
 using ShaderTools.CodeAnalysis;
@@ -70,7 +71,7 @@ namespace ShaderTools.LanguageServer
             _server = await OmniSharp.Extensions.LanguageServer.Server.LanguageServer.From(options => options
                 .WithInput(input)
                 .WithOutput(output)
-                .ConfigureLogging(x => x.AddSerilog(_logger).SetMinimumLevel(_minLogLevel).AddLanguageServer(_minLogLevel))
+                .ConfigureLogging(x => x.AddSerilog(_logger).SetMinimumLevel(_minLogLevel).AddLanguageProtocolLogging(_minLogLevel))
                 .OnInitialized(OnInitialized));
 
             var diagnosticService = _workspace.Services.GetService<IDiagnosticService>();
@@ -88,18 +89,38 @@ namespace ShaderTools.LanguageServer
                 DocumentSelector = documentSelector
             };
 
-            _server.AddHandlers(
+            var definitionRegistrationOptions = new DefinitionRegistrationOptions
+            {
+                DocumentSelector = documentSelector
+            };
+
+            var highlightRegistrationOptions = new DocumentHighlightRegistrationOptions
+            {
+                DocumentSelector = documentSelector
+            };
+
+            var symbolRegistrationOptions = new DocumentSymbolRegistrationOptions
+            {
+                DocumentSelector = documentSelector
+            };
+
+            var hoverRegistrationOptions = new HoverRegistrationOptions
+            {
+                DocumentSelector = documentSelector
+            };
+
+            _server.Register(s => { s.AddHandlers(
                 new TextDocumentSyncHandler(_workspace, registrationOptions),
                 new CompletionHandler(_workspace, registrationOptions),
-                new DefinitionHandler(_workspace, registrationOptions),
+                new DefinitionHandler(_workspace, definitionRegistrationOptions),
                 new WorkspaceSymbolsHandler(_workspace),
-                new DocumentHighlightHandler(_workspace, registrationOptions),
-                new DocumentSymbolsHandler(_workspace, registrationOptions),
-                new HoverHandler(_workspace, registrationOptions),
-                new SignatureHelpHandler(_workspace, registrationOptions));
+                new DocumentHighlightHandler(_workspace, highlightRegistrationOptions),
+                new DocumentSymbolsHandler(_workspace, symbolRegistrationOptions),
+                new HoverHandler(_workspace, hoverRegistrationOptions),
+                new SignatureHelpHandler(_workspace, registrationOptions));});
         }
 
-        private Task OnInitialized(ILanguageServer server, InitializeParams request, InitializeResult result)
+        private Task OnInitialized(ILanguageServer server, InitializeParams request, InitializeResult response, CancellationToken cancellationToken)
         {
             _workspace = new LanguageServerWorkspace(_exportProvider, request.RootPath);
 

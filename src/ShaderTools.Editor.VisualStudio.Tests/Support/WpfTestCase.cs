@@ -29,10 +29,14 @@ namespace ShaderTools.Editor.VisualStudio.Tests.Support
         [Obsolete("Called by the de-serializer", error: true)]
         public WpfTestCase() { }
 
+        public Exception InitializationException { get; }
+
         public IMethodInfo Method
         {
             get { return testCase.Method; }
         }
+
+        public int Timeout { get; } = 0;
 
         public Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink,
                                          IMessageBus messageBus,

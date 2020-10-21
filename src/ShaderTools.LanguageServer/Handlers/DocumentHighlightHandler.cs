@@ -2,9 +2,10 @@
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using ShaderTools.CodeAnalysis;
 using ShaderTools.CodeAnalysis.ReferenceHighlighting;
 
@@ -13,15 +14,15 @@ namespace ShaderTools.LanguageServer.Handlers
     internal sealed class DocumentHighlightHandler : IDocumentHighlightHandler
     {
         private readonly LanguageServerWorkspace _workspace;
-        private readonly TextDocumentRegistrationOptions _registrationOptions;
+        private readonly DocumentHighlightRegistrationOptions _registrationOptions;
 
-        public DocumentHighlightHandler(LanguageServerWorkspace workspace, TextDocumentRegistrationOptions registrationOptions)
+        public DocumentHighlightHandler(LanguageServerWorkspace workspace, DocumentHighlightRegistrationOptions registrationOptions)
         {
             _workspace = workspace;
             _registrationOptions = registrationOptions;
         }
 
-        public TextDocumentRegistrationOptions GetRegistrationOptions() => _registrationOptions;
+        DocumentHighlightRegistrationOptions IRegistration<DocumentHighlightRegistrationOptions>.GetRegistrationOptions() => _registrationOptions;
 
         public async Task<DocumentHighlightContainer> Handle(DocumentHighlightParams request, CancellationToken token)
         {

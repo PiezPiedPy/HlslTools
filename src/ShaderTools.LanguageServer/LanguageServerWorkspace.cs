@@ -28,7 +28,7 @@ namespace ShaderTools.LanguageServer
 
         public (Document logicalDocument, int position) GetLogicalDocument(TextDocumentPositionParams textDocumentPositionParams)
         {
-            var document = GetDocument(textDocumentPositionParams.TextDocument.Uri);
+            var document = GetDocument(textDocumentPositionParams.TextDocument.Uri.ToUri());
 
             var documentPosition = document.SourceText.Lines.GetPosition(new LinePosition(
                 (int) textDocumentPositionParams.Position.Line,

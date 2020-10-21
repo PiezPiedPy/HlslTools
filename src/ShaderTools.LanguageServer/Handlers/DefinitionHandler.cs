@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using ShaderTools.CodeAnalysis.GoToDefinition;
 using ShaderTools.CodeAnalysis.Shared.Extensions;
 
@@ -12,15 +13,15 @@ namespace ShaderTools.LanguageServer.Handlers
     internal sealed class DefinitionHandler : IDefinitionHandler
     {
         private readonly LanguageServerWorkspace _workspace;
-        private readonly TextDocumentRegistrationOptions _registrationOptions;
+        private readonly DefinitionRegistrationOptions _registrationOptions;
 
-        public DefinitionHandler(LanguageServerWorkspace workspace, TextDocumentRegistrationOptions registrationOptions)
+        public DefinitionHandler(LanguageServerWorkspace workspace, DefinitionRegistrationOptions registrationOptions)
         {
             _workspace = workspace;
             _registrationOptions = registrationOptions;
         }
 
-        public TextDocumentRegistrationOptions GetRegistrationOptions() => _registrationOptions;
+        DefinitionRegistrationOptions IRegistration<DefinitionRegistrationOptions>.GetRegistrationOptions() => _registrationOptions;
 
         public async Task<LocationOrLocationLinks> Handle(DefinitionParams request, CancellationToken token)
         {

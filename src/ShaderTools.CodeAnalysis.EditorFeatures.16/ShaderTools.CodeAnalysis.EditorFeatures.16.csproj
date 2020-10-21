@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Language" Version="16.0.189-g83e7c53a57" />
+    <PackageReference Include="Microsoft.VisualStudio.Language" Version="16.6.255" />
   </ItemGroup>
 
   <ItemGroup>

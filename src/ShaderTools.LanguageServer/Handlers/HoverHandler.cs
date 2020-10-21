@@ -1,8 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using ShaderTools.CodeAnalysis;
 using ShaderTools.CodeAnalysis.QuickInfo;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
@@ -12,15 +13,15 @@ namespace ShaderTools.LanguageServer.Handlers
     internal sealed class HoverHandler : IHoverHandler
     {
         private readonly LanguageServerWorkspace _workspace;
-        private readonly TextDocumentRegistrationOptions _registrationOptions;
+        private readonly HoverRegistrationOptions _registrationOptions;
 
-        public HoverHandler(LanguageServerWorkspace workspace, TextDocumentRegistrationOptions registrationOptions)
+        public HoverHandler(LanguageServerWorkspace workspace, HoverRegistrationOptions registrationOptions)
         {
             _workspace = workspace;
             _registrationOptions = registrationOptions;
         }
 
-        public TextDocumentRegistrationOptions GetRegistrationOptions() => _registrationOptions;
+        HoverRegistrationOptions IRegistration<HoverRegistrationOptions>.GetRegistrationOptions() => _registrationOptions;
 
         public async Task<Hover> Handle(HoverParams request, CancellationToken token)
         {

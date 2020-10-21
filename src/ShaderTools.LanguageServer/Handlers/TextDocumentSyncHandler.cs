@@ -1,17 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace ShaderTools.LanguageServer.Handlers
 {
-    internal sealed class TextDocumentSyncHandler : ITextDocumentSyncHandler 
+    internal sealed class TextDocumentSyncHandler : ITextDocumentSyncHandler
     {
         private readonly LanguageServerWorkspace _workspace;
         private readonly TextDocumentRegistrationOptions _registrationOptions;
@@ -30,14 +29,14 @@ namespace ShaderTools.LanguageServer.Handlers
             SyncKind = TextDocumentSyncKind.Incremental
         };
 
-        public TextDocumentAttributes GetTextDocumentAttributes(Uri uri)
+        public TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
         {
             return new TextDocumentAttributes(uri, string.Empty);
         }
 
         public Task<Unit> Handle(DidChangeTextDocumentParams notification, CancellationToken cancellationToken)
         {
-            var document = _workspace.GetDocument(notification.TextDocument.Uri);
+            var document = _workspace.GetDocument(notification.TextDocument.Uri.ToUri());
 
             if (document == null)
             {
@@ -58,7 +57,7 @@ namespace ShaderTools.LanguageServer.Handlers
         public Task<Unit> Handle(DidOpenTextDocumentParams notification, CancellationToken cancellationToken)
         {
             _workspace.OpenDocument(
-                notification.TextDocument.Uri,
+                notification.TextDocument.Uri.ToUri(),
                 notification.TextDocument.Text,
                 notification.TextDocument.LanguageId);
 
@@ -67,7 +66,7 @@ namespace ShaderTools.LanguageServer.Handlers
 
         public Task<Unit> Handle(DidCloseTextDocumentParams notification, CancellationToken cancellationToken)
         {
-            var document = _workspace.GetDocument(notification.TextDocument.Uri);
+            var document = _workspace.GetDocument(notification.TextDocument.Uri.ToUri());
 
             if (document != null)
             {
