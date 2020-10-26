@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Options;
 
@@ -17,7 +18,20 @@ namespace ShaderTools.CodeAnalysis.Options
         /// </summary>
         public T GetOption<T>(Option<T> option)
         {
-            return (T) GetOption(new OptionKey(option, language: null));
+            var optionkey = GetOption(new OptionKey(option));
+
+            if (option.Type == optionkey.GetType())
+            {
+                return (T)optionkey;
+            }
+            else
+            {
+                if (option.Type.IsEnum)
+                    return (T)Enum.Parse(option.Type, optionkey.ToString());
+
+                //try cast as a last resort
+                return (T)optionkey;
+            }
         }
 
         /// <summary>
