@@ -23,6 +23,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Notification
         [ImportingConstructor]
         public VSNotificationServiceFactory(SVsServiceProvider serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _uiShellService = (IVsUIShell) serviceProvider.GetService(typeof(SVsUIShell));
         }
 
@@ -58,6 +59,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Notification
                 string title = null,
                 NotificationSeverity severity = NotificationSeverity.Warning)
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (NotificationCallback != null)
                 {
                     // invoke the callback
@@ -92,6 +94,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Notification
 
             public bool ConfirmMessageBox(string message, string title = null, NotificationSeverity severity = NotificationSeverity.Warning)
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _uiShellService.EnableModeless(0);
                 try
                 {

@@ -2,6 +2,7 @@
 
 using System.Threading;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using ShaderTools.CodeAnalysis.Shared.Extensions;
@@ -14,6 +15,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.LanguageService
     {
         public int UpdateLanguageContext(uint dwHint, IVsTextLines pBuffer, Microsoft.VisualStudio.TextManager.Interop.TextSpan[] ptsSelection, object pUC)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var textBuffer = EditorAdaptersFactoryService.GetDataBuffer(pBuffer);
             var context = (IVsUserContext)pUC;
 

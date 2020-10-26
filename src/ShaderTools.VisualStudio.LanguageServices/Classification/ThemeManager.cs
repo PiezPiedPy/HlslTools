@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
+using Microsoft;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 
@@ -58,6 +59,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Classification
             try
             {
                 dynamic themeService = _serviceProvider.GetService(typeof(SVsColorThemeService));
+                Assumes.Present(themeService);
                 return (Guid) themeService.CurrentTheme.ThemeId;
             }
             catch

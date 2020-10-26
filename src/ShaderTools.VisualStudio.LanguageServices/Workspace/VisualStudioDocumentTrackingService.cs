@@ -27,6 +27,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
         [ImportingConstructor]
         public VisualStudioDocumentTrackingService(SVsServiceProvider serviceProvider, IVsEditorAdaptersFactoryService editorAdaptersFactoryService)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _editorAdaptersFactoryService = editorAdaptersFactoryService;
 
             _monitorSelection = (IVsMonitorSelection) serviceProvider.GetService(typeof(SVsShellMonitorSelection));
@@ -62,6 +63,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
 
         public int OnElementValueChanged([ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSSELELEMID")]uint elementid, object varValueOld, object varValueNew)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (elementid == (uint) VSConstants.VSSELELEMID.SEID_DocumentFrame)
             {
                 // Remember the newly activated frame so it can be read from another thread.

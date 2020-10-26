@@ -124,7 +124,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Shared.Utilities
             // Does nothing.
         }
 
-        public Task InvokeBelowInputPriority(Action action, CancellationToken cancellationToken = default(CancellationToken))
+        public Task InvokeBelowInputPriorityAsync(Action action, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (IsForeground() && !IsInputPending())
             {

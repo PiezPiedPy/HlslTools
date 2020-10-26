@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -37,6 +38,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.NavigationBar
             IVsCodeWindow codeWindow,
             IServiceProvider serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _manager = manager;
             _codeWindow = codeWindow;
             _currentTypeItems = SpecializedCollections.EmptyList<NavigationBarItem>();

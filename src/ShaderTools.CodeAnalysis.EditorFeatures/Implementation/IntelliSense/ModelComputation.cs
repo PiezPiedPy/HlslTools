@@ -162,7 +162,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.IntelliSense
 
             // When we've notified the controller of our result, we consider the async operation
             // to be completed.
-            _notifyControllerTask.CompletesAsyncOperation(asyncToken);
+            var unused = _notifyControllerTask.CompletesAsyncOperation(asyncToken);
         }
 
         private void OnModelUpdated(TModel result, bool updateController)

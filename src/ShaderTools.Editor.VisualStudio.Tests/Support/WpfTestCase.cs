@@ -54,18 +54,18 @@ namespace ShaderTools.Editor.VisualStudio.Tests.Support
 
                     // Arrange to pump messages to execute any async work associated with the test.
                     var frame = new DispatcherFrame();
-                    Task.Run(async delegate
-                    {
-                        try
-                        {
-                            await testCaseTask;
-                        }
-                        finally
-                        {
+                    var unused = Task.Run(async delegate
+                       {
+                           try
+                           {
+                               await testCaseTask;
+                           }
+                           finally
+                           {
                             // The test case's execution is done. Terminate the message pump.
                             frame.Continue = false;
-                        }
-                    });
+                           }
+                       });
                     Dispatcher.PushFrame(frame);
 
                     // Report the result back to the Task we returned earlier.

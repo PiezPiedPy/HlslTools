@@ -54,7 +54,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                         lexer.FileSegments);
                 });
 
-            Debug.WriteLine(DateTime.Now +  " - Finished parsing");
+            Debug.WriteLine(DateTime.Now +  " - Finished parsing - Hlsl");
 
             return result;
         }

@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 
 namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 {
@@ -9,6 +10,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
     {
         public static IComEventSink Advise<T>(object obj, T sink) where T : class
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!typeof(T).IsInterface)
             {
                 throw new InvalidOperationException();
@@ -45,6 +47,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
             public void Unadvise()
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_unadvised)
                 {
                     throw new InvalidOperationException("Already unadvised.");

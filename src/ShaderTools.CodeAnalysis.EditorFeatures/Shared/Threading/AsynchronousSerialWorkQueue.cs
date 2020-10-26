@@ -94,7 +94,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Shared.Threading
                         action, afterDelay, TaskContinuationOptions.None, TaskScheduler.Default, cancellationToken);
                 }
 
-                _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
+                var unused = _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
             }
         }
 
@@ -137,7 +137,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Shared.Threading
                         cancellationToken);
                 }
 
-                _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
+                var unused = _currentBackgroundTask.CompletesAsyncOperation(asyncToken);
             }
         }
 

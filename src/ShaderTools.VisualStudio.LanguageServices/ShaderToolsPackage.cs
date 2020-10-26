@@ -27,6 +27,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_componentModel == null)
                 {
                     _componentModel = (IComponentModel) GetService(typeof(SComponentModel));
@@ -38,6 +39,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
 
         protected override void Initialize()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             base.Initialize();
 
             Logger.SetLogger(new VisualStudioLogger(this));
@@ -53,6 +55,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
 
         protected override void LoadComponentsInUIContext()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Force-load services that don't load themselves.
             ComponentModel.GetService<ThemeColorFixer>();
             ComponentModel.GetService<ErrorsTableDataSource>();

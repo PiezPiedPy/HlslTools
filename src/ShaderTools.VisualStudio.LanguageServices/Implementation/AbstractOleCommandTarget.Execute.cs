@@ -12,6 +12,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
     {
         public virtual int Exec(ref Guid pguidCmdGroup, uint commandId, uint executeInformation, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 var subjectBuffer = GetSubjectBufferContainingCaret();
@@ -47,10 +48,12 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
 
         protected virtual int ExecuteVisualStudio2000(ref Guid pguidCmdGroup, uint commandId, uint executeInformation, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int result = VSConstants.S_OK;
             var guidCmdGroup = pguidCmdGroup;
             Action executeNextCommandTarget = () =>
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 result = NextCommandTarget.Exec(ref guidCmdGroup, commandId, executeInformation, pvaIn, pvaOut);
             };
 

@@ -3,6 +3,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading;
+using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -22,9 +23,11 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
         [ImportingConstructor]
         public VisualStudioWaitIndicator(SVsServiceProvider serviceProvider)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _serviceProvider = serviceProvider;
 
             var shell = serviceProvider.GetService(typeof(SVsShell)) as IVsShell;
+            Assumes.Present(shell);
             shell.GetProperty((int) __VSSPROPID5.VSSPROPID_ReleaseVersion, out var property);
 
             _isUpdate1 = Equals(property, "14.0.24720.0 D14REL");
@@ -33,6 +36,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
         public WaitIndicatorResult Wait(
             string title, string message, bool allowCancel, bool showProgress, Action<IWaitContext> action)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //using (Logger.LogBlock(FunctionId.Misc_VisualStudioWaitIndicator_Wait, s_messageGetter, title, message, CancellationToken.None))
             using (var waitContext = StartWait(title, message, allowCancel, showProgress))
             {
@@ -64,6 +68,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
         private VisualStudioWaitContext StartWait(
             string title, string message, bool allowCancel, bool showProgress)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Update1 has a bug where trying to update hte progress bar will cause a hang.
             // Check if we're on update1 and turn off 'showProgress' in that case.
             if (_isUpdate1)
@@ -72,6 +77,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
             }
 
             var componentModel = (IComponentModel) _serviceProvider.GetService(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             var workspace = componentModel.GetService<VisualStudioWorkspace>();
             Contract.ThrowIfNull(workspace);
 
@@ -85,6 +91,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
         IWaitContext IWaitIndicator.StartWait(
             string title, string message, bool allowCancel, bool showProgress)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return StartWait(title, message, allowCancel, showProgress);
         }
     }

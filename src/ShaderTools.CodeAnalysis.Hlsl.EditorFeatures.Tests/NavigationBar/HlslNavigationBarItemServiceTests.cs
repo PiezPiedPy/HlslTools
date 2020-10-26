@@ -10,7 +10,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Hlsl.Tests.NavigationBar
     public class HlslNavigationBarItemServiceTests
     {
         [Fact]
-        public async Task CanGetTargets()
+        public async Task CanGetTargetsAsync()
         {
             // Arrange.
             const string sourceCode = @"

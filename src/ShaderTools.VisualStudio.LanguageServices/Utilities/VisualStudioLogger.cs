@@ -20,6 +20,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
         public void Log(string message)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             try
             {
                 if (EnsurePane())

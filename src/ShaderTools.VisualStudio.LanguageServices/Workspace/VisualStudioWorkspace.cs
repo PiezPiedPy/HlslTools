@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -20,6 +21,7 @@ using ShaderTools.CodeAnalysis.Host;
 using ShaderTools.CodeAnalysis.Host.Mef;
 using ShaderTools.CodeAnalysis.Options;
 using ShaderTools.CodeAnalysis.Text;
+using ShaderTools.VisualStudio.LanguageServices.Implementation.Options;
 
 namespace ShaderTools.VisualStudio.LanguageServices
 {
@@ -66,7 +68,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
 
             if (Services.GetService<IOptionService>() is OptionServiceFactory.OptionService optionService)
             {
-                optionService.RegisterDocumentOptionsProvider(new Implementation.Options.EditorconfigDocumentOptionsProvider());
+                optionService.RegisterDocumentOptionsProvider(new EditorconfigDocumentOptionsProvider());
             }
         }
 
@@ -74,6 +76,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
 
         public override void OpenDocument(DocumentId documentId, bool activate = true)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (documentId == null)
             {
                 throw new ArgumentNullException(nameof(documentId));
@@ -120,6 +123,7 @@ namespace ShaderTools.VisualStudio.LanguageServices
         private static ExportProvider GetExportProvider(SVsServiceProvider serviceProvider)
         {
             var componentModel = (IComponentModel) serviceProvider.GetService(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             return componentModel.DefaultExportProvider;
         }
 

@@ -53,7 +53,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigationBar
                         TaskContinuationOptions.OnlyOnRanToCompletion,
                         TaskScheduler.Default,
                         cancellationToken);
-            _modelTask.CompletesAsyncOperation(asyncToken);
+            var unused = _modelTask.CompletesAsyncOperation(asyncToken);
 
             StartSelectedItemUpdateTask(selectedItemUpdateDelay, updateUIWhenDone);
         }
@@ -137,12 +137,12 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigationBar
                 TaskContinuationOptions.None,
                 TaskScheduler.Default,
                 cancellationToken);
-            _selectedItemInfoTask.CompletesAsyncOperation(asyncToken);
+            var unused = _selectedItemInfoTask.CompletesAsyncOperation(asyncToken);
 
             if (updateUIWhenDone)
             {
                 asyncToken = _asyncListener.BeginAsyncOperation(GetType().Name + ".StartSelectedItemUpdateTask.UpdateUI");
-                _selectedItemInfoTask.SafeContinueWith(
+                var unused1 = _selectedItemInfoTask.SafeContinueWith(
                     t => PushSelectedItemsToPresenter(t.Result),
                     TaskContinuationOptions.OnlyOnRanToCompletion,
                     ForegroundTaskScheduler,

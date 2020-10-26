@@ -3,16 +3,18 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using Microsoft;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.VisualStudio.ComponentModelHost;
 using ShaderTools.CodeAnalysis.Options;
 
 namespace ShaderTools.VisualStudio.LanguageServices.Options.UI
 {
-    [System.ComponentModel.DesignerCategory("code")] // this must be fully qualified
+    [DesignerCategory("code")] // this must be fully qualified
     public abstract class AbstractOptionPageControl : UserControl
     {
         internal readonly IOptionService OptionService;
@@ -28,29 +30,30 @@ namespace ShaderTools.VisualStudio.LanguageServices.Options.UI
             }
 
             var componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
+            Assumes.Present(componentModel);
             var workspace = componentModel.GetService<VisualStudioWorkspace>();
             this.OptionService = workspace.Services.GetService<IOptionService>();
         }
 
         private void InitializeStyles()
         {
-            var groupBoxStyle = new System.Windows.Style(typeof(GroupBox));
+            var groupBoxStyle = new Style(typeof(GroupBox));
             groupBoxStyle.Setters.Add(new Setter(GroupBox.PaddingProperty, new Thickness() { Left = 7, Right = 7, Top = 7 }));
             groupBoxStyle.Setters.Add(new Setter(GroupBox.MarginProperty, new Thickness() { Bottom = 3 }));
             groupBoxStyle.Setters.Add(new Setter(GroupBox.ForegroundProperty, new DynamicResourceExtension(SystemColors.WindowTextBrushKey)));
             Resources.Add(typeof(GroupBox), groupBoxStyle);
 
-            var checkBoxStyle = new System.Windows.Style(typeof(CheckBox));
+            var checkBoxStyle = new Style(typeof(CheckBox));
             checkBoxStyle.Setters.Add(new Setter(CheckBox.MarginProperty, new Thickness() { Bottom = 7 }));
             checkBoxStyle.Setters.Add(new Setter(CheckBox.ForegroundProperty, new DynamicResourceExtension(SystemColors.WindowTextBrushKey)));
             Resources.Add(typeof(CheckBox), checkBoxStyle);
 
-            var textBoxStyle = new System.Windows.Style(typeof(TextBox));
+            var textBoxStyle = new Style(typeof(TextBox));
             textBoxStyle.Setters.Add(new Setter(TextBox.MarginProperty, new Thickness() { Left = 7, Right = 7 }));
             textBoxStyle.Setters.Add(new Setter(TextBox.ForegroundProperty, new DynamicResourceExtension(SystemColors.WindowTextBrushKey)));
             Resources.Add(typeof(TextBox), textBoxStyle);
 
-            var radioButtonStyle = new System.Windows.Style(typeof(RadioButton));
+            var radioButtonStyle = new Style(typeof(RadioButton));
             radioButtonStyle.Setters.Add(new Setter(RadioButton.MarginProperty, new Thickness() { Bottom = 7 }));
             radioButtonStyle.Setters.Add(new Setter(RadioButton.ForegroundProperty, new DynamicResourceExtension(SystemColors.WindowTextBrushKey)));
             Resources.Add(typeof(RadioButton), radioButtonStyle);
@@ -157,13 +160,13 @@ namespace ShaderTools.VisualStudio.LanguageServices.Options.UI
     public class RadioButtonCheckedConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter,
-            System.Globalization.CultureInfo culture)
+            CultureInfo culture)
         {
             return value.Equals(parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter,
-            System.Globalization.CultureInfo culture)
+            CultureInfo culture)
         {
             return value.Equals(true) ? parameter : Binding.DoNothing;
         }

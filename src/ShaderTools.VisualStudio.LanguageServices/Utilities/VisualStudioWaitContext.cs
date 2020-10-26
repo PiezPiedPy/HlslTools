@@ -2,6 +2,7 @@
 
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ShaderTools.CodeAnalysis.Editor.Host;
 using ShaderTools.CodeAnalysis.Shared.Utilities;
@@ -29,6 +30,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
             bool allowCancel,
             bool showProgress)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _title = title;
             _message = message;
             _allowCancel = allowCancel;
@@ -44,6 +46,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
         private IVsThreadedWaitDialog3 CreateDialog(
             IVsThreadedWaitDialogFactory dialogFactory, bool showProgress)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Marshal.ThrowExceptionForHR(dialogFactory.CreateInstance(out var dialog2));
             Contract.ThrowIfNull(dialog2);
 
@@ -86,6 +89,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _message = value;
                 UpdateDialog();
             }
@@ -100,6 +104,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
             set
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 _allowCancel = value;
                 UpdateDialog();
             }
@@ -107,6 +112,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
         private void UpdateDialog()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _dialog.UpdateProgress(
                 _message,
                 szProgressText: null,
@@ -119,6 +125,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Utilities
 
         public void Dispose()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             _dialog.EndWaitDialog(out var canceled);
         }
 

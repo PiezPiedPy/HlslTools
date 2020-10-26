@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Microsoft;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -49,7 +50,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Options.UI
             this.Items = new List<object>();
 
             _componentModel = (IComponentModel)serviceProvider.GetService(typeof(SComponentModel));
-
+            Assumes.Present(_componentModel);
             _contentTypeRegistryService = _componentModel.GetService<IContentTypeRegistryService>();
             _textBufferFactoryService = _componentModel.GetService<ITextBufferFactoryService>();
             _textEditorFactoryService = _componentModel.GetService<ITextEditorFactoryService>();

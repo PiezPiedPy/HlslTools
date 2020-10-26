@@ -32,7 +32,7 @@ namespace ShaderTools.CodeAnalysis.ShaderLab.Syntax
                     return node;
                 });
 
-            Debug.WriteLine(DateTime.Now + " - Finished parsing");
+            Debug.WriteLine(DateTime.Now + " - Finished parsing - ShaderLab");
 
             return result;
         }

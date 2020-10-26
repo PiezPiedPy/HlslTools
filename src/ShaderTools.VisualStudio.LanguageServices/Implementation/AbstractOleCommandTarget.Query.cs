@@ -4,10 +4,10 @@ using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Commanding;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.Commanding;
-using ShaderTools.CodeAnalysis.Editor;
 using ShaderTools.CodeAnalysis.Editor.Commands;
 using ShaderTools.Utilities.Diagnostics;
 
@@ -19,6 +19,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint commandCount, OLECMD[] prgCmds, IntPtr commandText)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Contract.ThrowIfFalse(commandCount == 1);
             Contract.ThrowIfFalse(prgCmds.Length == 1);
 
@@ -36,6 +37,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
 
         private int QueryVisualStudio2000Status(ref Guid pguidCmdGroup, uint commandCount, OLECMD[] prgCmds, IntPtr commandText)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             switch ((VSConstants.VSStd2KCmdID) prgCmds[0].cmdID)
             {
                 case VSConstants.VSStd2KCmdID.OPENFILE:
@@ -59,6 +61,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
             var guidCmdGroup = pguidCmdGroup;
             Func<CommandState> executeNextCommandTarget = () =>
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 result = NextCommandTarget.QueryStatus(ref guidCmdGroup, commandCount, prgCmds, commandText);
 
                 var isAvailable = ((OLECMDF) prgCmds[0].cmdf & OLECMDF.OLECMDF_ENABLED) == OLECMDF.OLECMDF_ENABLED;

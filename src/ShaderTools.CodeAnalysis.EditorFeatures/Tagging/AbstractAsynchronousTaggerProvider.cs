@@ -185,7 +185,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Tagging
         /// </summary>
         protected abstract ITaggerEventSource CreateEventSource(ITextView textViewOpt, ITextBuffer subjectBuffer);
 
-        internal Task ProduceTagsAsync_ForTestingPurposesOnly(TaggerContext<TTag> context)
+        internal Task ProduceTagsAsync_ForTestingPurposesOnlyAsync(TaggerContext<TTag> context)
         {
             return ProduceTagsAsync(context);
         }

@@ -100,7 +100,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigateTo
             {
                 try
                 {
-                    await SearchAsyncWorker(document).ConfigureAwait(false);
+                    await SearchAsyncWorkerAsync(document).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -108,7 +108,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Implementation.NavigateTo
                 }
             }
 
-            private async Task SearchAsyncWorker(Document document)
+            private async Task SearchAsyncWorkerAsync(Document document)
             {
                 var service = document.Workspace.Services.GetService<INavigateToSearchService>();
                 if (service != null)

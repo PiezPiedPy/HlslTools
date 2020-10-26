@@ -38,7 +38,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Hlsl.Formatting
 
             var span = textSpan ?? new TextSpan(0, syntaxTree.Text.Length);
 
-            return Formatter.GetFormattedTextChanges(
+            return await Formatter.GetFormattedTextChangesAsync(
                 syntaxTree,
                 syntaxTree.Root,
                 SpecializedCollections.SingletonEnumerable(span),
@@ -64,7 +64,7 @@ namespace ShaderTools.CodeAnalysis.Editor.Hlsl.Formatting
             var syntaxTree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
             var options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
 
-            return Formatter.GetFormattedTextChanges(
+            return await Formatter.GetFormattedTextChangesAsync(
                 syntaxTree,
                 syntaxTree.Root,
                 SpecializedCollections.SingletonEnumerable(textSpan), 

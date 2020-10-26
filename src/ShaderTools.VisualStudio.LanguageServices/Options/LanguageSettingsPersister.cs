@@ -6,8 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 using ShaderTools.CodeAnalysis;
 using ShaderTools.CodeAnalysis.Completion;
@@ -53,6 +55,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Options
             : base(assertIsForeground: true)
         {
             _textManager = (IVsTextManager4) serviceProvider.GetService(typeof(SVsTextManager));
+            Assumes.Present(_textManager);
             _optionService = optionService;
 
             // TODO: make this configurable
@@ -252,13 +255,13 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Options
             Marshal.ThrowExceptionForHR(_textManager.GetUserPreferences4(null, languagePreferences, null));
 
             SetValueForOption(optionKey.Option, ref languagePreferences[0], value);
-            SetUserPreferencesMaybeAsync(languagePreferences);
+            SetUserPreferencesMaybe(languagePreferences);
 
             // Even if we didn't call back, say we completed the persist
             return true;
         }
 
-        private void SetUserPreferencesMaybeAsync(LANGPREFERENCES3[] languagePreferences)
+        private void SetUserPreferencesMaybe(LANGPREFERENCES3[] languagePreferences)
         {
             if (IsForeground())
             {
@@ -266,7 +269,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation.Options
             }
             else
             {
-                Task.Factory.StartNew(() => this.SetUserPreferencesMaybeAsync(languagePreferences), CancellationToken.None, TaskCreationOptions.None, ForegroundThreadAffinitizedObject.CurrentForegroundThreadData.TaskScheduler);
+                var unused = System.Threading.Tasks.Task.Factory.StartNew(() => this.SetUserPreferencesMaybe(languagePreferences), CancellationToken.None, TaskCreationOptions.None, ForegroundThreadAffinitizedObject.CurrentForegroundThreadData.TaskScheduler);
             }
         }
     }

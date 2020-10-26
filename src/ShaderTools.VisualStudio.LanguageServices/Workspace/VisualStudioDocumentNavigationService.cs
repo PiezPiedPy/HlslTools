@@ -76,6 +76,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
 
         public bool TryNavigateToSpan(Workspace workspace, DocumentId documentId, SourceFileSpan sourceFileSpan, OptionSet options)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!IsForeground())
             {
                 throw new InvalidOperationException(LanguageServicesResources.Navigation_must_be_performed_on_the_foreground_thread);
@@ -153,6 +154,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.Implementation
 
         public bool TryNavigateToPosition(Workspace workspace, DocumentId documentId, int position, int virtualSpace = 0, OptionSet options = null)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (!IsForeground())
             {
                 throw new InvalidOperationException(LanguageServicesResources.Navigation_must_be_performed_on_the_foreground_thread);

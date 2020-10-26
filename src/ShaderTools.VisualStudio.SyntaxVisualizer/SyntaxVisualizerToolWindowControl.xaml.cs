@@ -40,6 +40,7 @@ namespace ShaderTools.VisualStudio.SyntaxVisualizer
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (_runningDocumentTable == null)
                     _runningDocumentTable = (IVsRunningDocumentTable) Package.GetGlobalService(typeof(SVsRunningDocumentTable));
                 return _runningDocumentTable;
@@ -50,12 +51,14 @@ namespace ShaderTools.VisualStudio.SyntaxVisualizer
 
         public SyntaxVisualizerToolWindowControl()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             InitializeComponent();
             InitializeRunningDocTable();
         }
 
         private void InitializeRunningDocTable()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             RunningDocumentTable?.AdviseRunningDocTableEvents(this, out _runningDocumentTableCookie);
         }
 
@@ -108,8 +111,9 @@ namespace ShaderTools.VisualStudio.SyntaxVisualizer
             return VSConstants.S_OK;
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (_runningDocumentTableCookie == 0)
                 return;
             _runningDocumentTable.UnadviseRunningDocTableEvents(_runningDocumentTableCookie);

@@ -2,7 +2,9 @@
 
 using System;
 using System.ComponentModel.Design;
+using Microsoft;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace ShaderTools.VisualStudio.LanguageServices.LanguageService
@@ -21,6 +23,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.LanguageService
 
         protected override void Initialize()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             base.Initialize();
 
             RegisterLanguageService(typeof(TLanguageService), () =>
@@ -32,6 +35,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.LanguageService
                 return _languageService;
             });
             var shell = (IVsShell) this.GetService(typeof(SVsShell));
+            Assumes.Present(shell);
             // Okay, this is also a bit strange.  We need to get our Interop dll into our process,
             // but we're in the GAC.  Ask the base Roslyn Package to load, and it will take care of
             // it for us.
@@ -53,6 +57,7 @@ namespace ShaderTools.VisualStudio.LanguageServices.LanguageService
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 ForegroundObject.AssertIsForeground();
 
                 return (IComponentModel) GetService(typeof(SComponentModel));
