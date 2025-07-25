@@ -13,7 +13,7 @@ namespace ShaderTools.LanguageServer
             // TODO: Make this an option.
             var logFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ShaderTools");
 
-            if (args.Contains("--launch-debugger"))
+            //if (args.Contains("--launch-debugger"))
             {
                 Debugger.Launch();
             }

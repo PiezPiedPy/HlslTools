@@ -1,7 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml.Linq;
+using Microsoft.CodeAnalysis.Text;
 using ShaderTools.CodeAnalysis.Hlsl.Syntax;
 using ShaderTools.CodeAnalysis.Syntax;
+using ShaderTools.CodeAnalysis.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 {
@@ -89,7 +93,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
         private FunctionDeclarationSyntax ParseFunctionDeclaration()
         {
-            return (FunctionDeclarationSyntax) ParseFunctionDefinitionOrDeclaration(true);
+            return (FunctionDeclarationSyntax)ParseFunctionDefinitionOrDeclaration(true);
         }
 
         private DeclarationNameSyntax ParseDeclarationName(bool declarationOnly)
@@ -167,8 +171,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             {
                 var body = ParseBlock(new List<AttributeDeclarationSyntaxBase>());
                 var semicolon = NextTokenIf(SyntaxKind.SemiToken);
-                return new FunctionDefinitionSyntax(attributes, modifiers, returnType, 
-                    name, new ParameterListSyntax(openParen, new SeparatedSyntaxList<ParameterSyntax>(parameters), closeParen), 
+                return new FunctionDefinitionSyntax(attributes, modifiers, returnType,
+                    name, new ParameterListSyntax(openParen, new SeparatedSyntaxList<ParameterSyntax>(parameters), closeParen),
                     semantic, body, semicolon);
             }
             else
@@ -177,8 +181,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
                 Debug.Assert(name.Kind == SyntaxKind.IdentifierDeclarationName);
 
-                return new FunctionDeclarationSyntax(attributes, modifiers, returnType, name, 
-                    new ParameterListSyntax(openParen, new SeparatedSyntaxList<ParameterSyntax>(parameters), closeParen), 
+                return new FunctionDeclarationSyntax(attributes, modifiers, returnType, name,
+                    new ParameterListSyntax(openParen, new SeparatedSyntaxList<ParameterSyntax>(parameters), closeParen),
                     semantic, semicolon);
             }
         }
@@ -292,6 +296,20 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             return new ConstantBufferSyntax(attributes, cbuffer, name, register, openBrace, fields, closeBrace, semicolon);
         }
 
+        private ToggleDefinitionSyntax ParseToggleDeclaration()
+        {
+            var name = Match(SyntaxKind.ToggleNameToken);
+            var stateInitializer = ParseStateInitializer();
+
+            var syntax= new ToggleDefinitionSyntax(name, stateInitializer);
+
+            //var declareString = $"float {name.Text.Replace("@", "TOGGLE")} = 1";
+            //var root=SyntaxFactory.Parse(new SourceFile(SourceText.From(declareString)), null, null, p => p.ParseVariableDeclaration()).Root;
+
+            //syntax.declaration = ParseVariableDeclarationStatement();
+            return syntax;
+        }
+
         private TechniqueSyntax ParseTechnique()
         {
             var technique = NextToken();
@@ -379,7 +397,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             {
                 _allowGreaterThanTokenAroundRhsExpression = false;
             }
-            
+
             var semicolon = Match(SyntaxKind.SemiToken);
             return new ExpressionStatementSyntax(new List<AttributeDeclarationSyntaxBase>(), expression, semicolon);
         }

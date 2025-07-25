@@ -729,6 +729,14 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         Parameter,
         ParameterList,
 
+        //  Messiah parts
+        ToggleDefinitionDeclaration,
+        ToggleInitializer,
+        ToggleNameToken,
+        ToggleExpression,
+
+        TogglePrefixToken,
+
         BadToken
     }
 }

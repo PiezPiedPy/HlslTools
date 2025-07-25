@@ -37,6 +37,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes
         CompoundExpression,
         ArrayInitializerExpression,
         CompileExpression,
+        BoundToggleExpression,
 
         // Statements
         Block,

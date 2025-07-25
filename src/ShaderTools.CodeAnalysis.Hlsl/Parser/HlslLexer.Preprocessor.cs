@@ -65,7 +65,6 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                         goto default;
                     ReadBracketedString();
                     break;
-
                 default:
                     ReadToken();
                     if (_contextualKind.IsPreprocessorDirective())

@@ -6,6 +6,7 @@ using ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes;
 using ShaderTools.CodeAnalysis.Hlsl.Diagnostics;
 using ShaderTools.CodeAnalysis.Hlsl.Symbols;
 using ShaderTools.CodeAnalysis.Hlsl.Syntax;
+using ShaderTools.CodeAnalysis.Text;
 
 namespace ShaderTools.CodeAnalysis.Hlsl.Binding
 {
@@ -22,31 +23,31 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             switch (syntax.Kind)
             {
                 case SyntaxKind.Block:
-                    return BindBlock((BlockSyntax) syntax, parent);
+                    return BindBlock((BlockSyntax)syntax, parent);
                 case SyntaxKind.BreakStatement:
-                    return BindBreakStatement((BreakStatementSyntax) syntax);
+                    return BindBreakStatement((BreakStatementSyntax)syntax);
                 case SyntaxKind.DiscardStatement:
-                    return BindDiscardStatement((DiscardStatementSyntax) syntax);
+                    return BindDiscardStatement((DiscardStatementSyntax)syntax);
                 case SyntaxKind.DoStatement:
-                    return BindDoStatement((DoStatementSyntax) syntax, parent);
+                    return BindDoStatement((DoStatementSyntax)syntax, parent);
                 case SyntaxKind.ExpressionStatement:
-                    return BindExpressionStatement((ExpressionStatementSyntax) syntax);
+                    return BindExpressionStatement((ExpressionStatementSyntax)syntax);
                 case SyntaxKind.ForStatement:
-                    return BindForStatement((ForStatementSyntax) syntax, parent);
+                    return BindForStatement((ForStatementSyntax)syntax, parent);
                 case SyntaxKind.IfStatement:
-                    return BindIfStatement((IfStatementSyntax) syntax, parent);
+                    return BindIfStatement((IfStatementSyntax)syntax, parent);
                 case SyntaxKind.ReturnStatement:
-                    return BindReturnStatement((ReturnStatementSyntax) syntax);
+                    return BindReturnStatement((ReturnStatementSyntax)syntax);
                 case SyntaxKind.VariableDeclarationStatement:
-                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax) syntax, parent);
+                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)syntax, parent);
                 case SyntaxKind.SwitchStatement:
-                    return BindSwitchStatement((SwitchStatementSyntax) syntax, parent);
+                    return BindSwitchStatement((SwitchStatementSyntax)syntax, parent);
                 case SyntaxKind.WhileStatement:
-                    return BindWhileStatement((WhileStatementSyntax) syntax, parent);
+                    return BindWhileStatement((WhileStatementSyntax)syntax, parent);
                 case SyntaxKind.ContinueStatement:
-                    return BindContinueStatement((ContinueStatementSyntax) syntax);
+                    return BindContinueStatement((ContinueStatementSyntax)syntax);
                 case SyntaxKind.EmptyStatement:
-                    return BindEmptyStatement((EmptyStatementSyntax) syntax);
+                    return BindEmptyStatement((EmptyStatementSyntax)syntax);
                 default:
                     throw new NotSupportedException("Not supported: " + syntax.Kind);
             }
@@ -103,7 +104,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             switch (syntax.Kind)
             {
                 case SyntaxKind.CaseSwitchLabel:
-                    var caseSwitchLabel = (CaseSwitchLabelSyntax) syntax;
+                    var caseSwitchLabel = (CaseSwitchLabelSyntax)syntax;
                     boundExpression = Bind(caseSwitchLabel.Value, BindExpression);
                     break;
                 case SyntaxKind.DefaultSwitchLabel:
@@ -125,7 +126,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             return new BoundDiscardStatement();
         }
 
-        private BoundExpressionStatement BindExpressionStatement(ExpressionStatementSyntax syntax) 
+        private BoundExpressionStatement BindExpressionStatement(ExpressionStatementSyntax syntax)
         {
             return new BoundExpressionStatement(Bind(syntax.Expression, BindExpression));
         }

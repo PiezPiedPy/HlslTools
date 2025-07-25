@@ -422,6 +422,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                     case SyntaxKind.SemiToken:
                         declarations.Add(new EmptyStatementSyntax(new List<AttributeDeclarationSyntaxBase>(), NextToken()));
                         break;
+                    case SyntaxKind.ToggleNameToken:
+                        declarations.Add(ParseToggleDeclaration());
+                        break;
                     default:
                         if (IsPossibleCBufferOrTBuffer())
                             declarations.Add(ParseConstantBuffer());

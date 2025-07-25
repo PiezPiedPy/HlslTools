@@ -862,6 +862,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 default:
                     if (Char.IsLetter(_charReader.Current) || _charReader.Current == '_')
                         ReadIdentifierOrKeyword();
+                    else if (_charReader.Current == '@')
+                        ReadTokenName();
                     else if (Char.IsDigit(_charReader.Current))
                         ReadNumber();
                     else
@@ -1278,6 +1280,31 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             }
 
             return val;
+        }
+        private void ReadTokenName()
+        {
+            var start = _charReader.Position;
+
+            // Skip first letter
+            NextChar();
+
+            // The following characters can be letters, digits the underscore and the dollar sign.
+
+            while (char.IsLetterOrDigit(_charReader.Current) ||
+                   _charReader.Current == '_')
+            {
+                NextChar();
+            }
+
+            var end = _charReader.Position;
+            var span = TextSpan.FromBounds(start, end);
+            var text = File.Text.GetSubText(span).ToString();
+
+            _kind = SyntaxKind.ToggleNameToken;
+
+            _contextualKind = _kind;
+
+            _value = text;
         }
 
         private void ReadIdentifierOrKeyword()

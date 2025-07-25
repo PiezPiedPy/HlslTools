@@ -25,20 +25,20 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.NumericLiteralExpression:
                 case SyntaxKind.CharacterLiteralExpression:
-                    return BindLiteralExpression((LiteralExpressionSyntax) node);
+                    return BindLiteralExpression((LiteralExpressionSyntax)node);
                 case SyntaxKind.StringLiteralExpression:
-                    return BindStringLiteralExpression((StringLiteralExpressionSyntax) node);
+                    return BindStringLiteralExpression((StringLiteralExpressionSyntax)node);
                 case SyntaxKind.IdentifierName:
-                    return BindIdentifierName((IdentifierNameSyntax) node);
+                    return BindIdentifierName((IdentifierNameSyntax)node);
                 case SyntaxKind.QualifiedName:
-                    return BindQualifiedName((QualifiedNameSyntax) node);
+                    return BindQualifiedName((QualifiedNameSyntax)node);
                 case SyntaxKind.PreDecrementExpression:
                 case SyntaxKind.PreIncrementExpression:
                 case SyntaxKind.UnaryMinusExpression:
                 case SyntaxKind.UnaryPlusExpression:
                 case SyntaxKind.LogicalNotExpression:
                 case SyntaxKind.BitwiseNotExpression:
-                    return BindPrefixUnaryExpression((PrefixUnaryExpressionSyntax) node);
+                    return BindPrefixUnaryExpression((PrefixUnaryExpressionSyntax)node);
                 case SyntaxKind.PostDecrementExpression:
                 case SyntaxKind.PostIncrementExpression:
                     return BindPostfixUnaryExpression((PostfixUnaryExpressionSyntax)node);
@@ -60,15 +60,15 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 case SyntaxKind.RightShiftExpression:
                 case SyntaxKind.LogicalOrExpression:
                 case SyntaxKind.LogicalAndExpression:
-                    return BindBinaryExpression((BinaryExpressionSyntax) node);
+                    return BindBinaryExpression((BinaryExpressionSyntax)node);
                 case SyntaxKind.FieldAccessExpression:
-                    return BindFieldAccessExpression((FieldAccessExpressionSyntax) node);
+                    return BindFieldAccessExpression((FieldAccessExpressionSyntax)node);
                 case SyntaxKind.FunctionInvocationExpression:
-                    return BindFunctionInvocationExpression((FunctionInvocationExpressionSyntax) node);
+                    return BindFunctionInvocationExpression((FunctionInvocationExpressionSyntax)node);
                 case SyntaxKind.MethodInvocationExpression:
-                    return BindMethodInvocationExpression((MethodInvocationExpressionSyntax) node);
+                    return BindMethodInvocationExpression((MethodInvocationExpressionSyntax)node);
                 case SyntaxKind.NumericConstructorInvocationExpression:
-                    return BindNumericConstructorInvocationExpression((NumericConstructorInvocationExpressionSyntax) node);
+                    return BindNumericConstructorInvocationExpression((NumericConstructorInvocationExpressionSyntax)node);
                 case SyntaxKind.SimpleAssignmentExpression:
                 case SyntaxKind.AddAssignmentExpression:
                 case SyntaxKind.SubtractAssignmentExpression:
@@ -80,21 +80,23 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 case SyntaxKind.OrAssignmentExpression:
                 case SyntaxKind.LeftShiftAssignmentExpression:
                 case SyntaxKind.RightShiftAssignmentExpression:
-                    return BindAssignmentExpression((AssignmentExpressionSyntax) node);
+                    return BindAssignmentExpression((AssignmentExpressionSyntax)node);
                 case SyntaxKind.CastExpression:
-                    return BindCastExpression((CastExpressionSyntax) node);
+                    return BindCastExpression((CastExpressionSyntax)node);
                 case SyntaxKind.CompoundExpression:
-                    return BindCompoundExpression((CompoundExpressionSyntax) node);
+                    return BindCompoundExpression((CompoundExpressionSyntax)node);
                 case SyntaxKind.ParenthesizedExpression:
-                    return BindParenthesizedExpression((ParenthesizedExpressionSyntax) node);
+                    return BindParenthesizedExpression((ParenthesizedExpressionSyntax)node);
                 case SyntaxKind.ConditionalExpression:
-                    return BindConditionalExpression((ConditionalExpressionSyntax) node);
+                    return BindConditionalExpression((ConditionalExpressionSyntax)node);
                 case SyntaxKind.ElementAccessExpression:
-                    return BindElementAccessExpression((ElementAccessExpressionSyntax) node);
+                    return BindElementAccessExpression((ElementAccessExpressionSyntax)node);
                 case SyntaxKind.ArrayInitializerExpression:
-                    return BindArrayInitializerExpression((ArrayInitializerExpressionSyntax) node);
+                    return BindArrayInitializerExpression((ArrayInitializerExpressionSyntax)node);
                 case SyntaxKind.CompileExpression:
-                    return BindCompileExpression((CompileExpressionSyntax) node);
+                    return BindCompileExpression((CompileExpressionSyntax)node);
+                case SyntaxKind.ToggleExpression:
+                    return BindToggleExpression((IdentifierNameSyntax)node);
                 default:
                     throw new ArgumentOutOfRangeException(node.Kind.ToString());
             }
@@ -258,13 +260,13 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
         private BoundExpression BindAssignmentExpression(AssignmentExpressionSyntax node)
         {
             // TODO: Need to apply similar overload resolution as BindBinaryExpression.
-            var operatorKind = (node.Kind != SyntaxKind.SimpleAssignmentExpression) 
-                ? (BinaryOperatorKind?) SyntaxFacts.GetBinaryOperatorKind(node.Kind) 
+            var operatorKind = (node.Kind != SyntaxKind.SimpleAssignmentExpression)
+                ? (BinaryOperatorKind?)SyntaxFacts.GetBinaryOperatorKind(node.Kind)
                 : null;
 
             return new BoundAssignmentExpression(
-                Bind(node.Left, BindExpression), 
-                operatorKind, 
+                Bind(node.Left, BindExpression),
+                operatorKind,
                 Bind(node.Right, BindExpression));
         }
 
@@ -305,6 +307,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             var name = node.Name;
             var symbols = LookupVariable(name).ToImmutableArray();
 
+            foreach (var toggle in LookupSymbols<ToggleNameSymbol>(name))
+            {
+                return new BoundToggleExpression(toggle, new BoundScalarType(IntrinsicTypes.Bool));
+            }
+
             if (symbols.Length == 0)
             {
                 var isInvocable = LookupSymbols<FunctionSymbol>(name).Any();
@@ -322,6 +329,20 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             var symbol = symbols.First();
 
             return new BoundVariableExpression(symbol);
+        }
+
+        private BoundExpression BindToggleExpression(IdentifierNameSyntax node)
+        {
+            if (node.Name.IsMissing)
+                return new BoundErrorExpression();
+
+            var name = node.Name;
+
+            foreach (var toggle in LookupSymbols<ToggleNameSymbol>(name))
+            {
+                return new BoundToggleExpression(toggle, new BoundScalarType(IntrinsicTypes.Bool));
+            }
+            return new BoundErrorExpression();
         }
 
         private BoundExpression BindQualifiedName(QualifiedNameSyntax node)
@@ -485,9 +506,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
         private BoundExpression BindFunctionInvocationExpression(FunctionInvocationExpressionSyntax syntax)
         {
             // Don't try to bind CompileShader function calls, for now.
-            if ((syntax.Name.Kind == SyntaxKind.IdentifierName) && ((IdentifierNameSyntax) syntax.Name).Name.ContextualKind == SyntaxKind.CompileShaderKeyword)
+            if ((syntax.Name.Kind == SyntaxKind.IdentifierName) && ((IdentifierNameSyntax)syntax.Name).Name.ContextualKind == SyntaxKind.CompileShaderKeyword)
                 return new BoundFunctionInvocationExpression(syntax,
-                    syntax.ArgumentList.Arguments.Select(x => (BoundExpression) new BoundErrorExpression()).ToImmutableArray(),
+                    syntax.ArgumentList.Arguments.Select(x => (BoundExpression)new BoundErrorExpression()).ToImmutableArray(),
                     OverloadResolutionResult<FunctionSymbolSignature>.None);
 
             var name = syntax.Name;
@@ -504,11 +525,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             {
                 case SyntaxKind.IdentifierName:
                     containerSymbol = null;
-                    actualName = ((IdentifierNameSyntax) name).Name;
+                    actualName = ((IdentifierNameSyntax)name).Name;
                     break;
                 case SyntaxKind.QualifiedName:
-                    containerSymbol = LookupContainer(((QualifiedNameSyntax) syntax.Name).Left);
-                    actualName = ((QualifiedNameSyntax) name).Right.Name;
+                    containerSymbol = LookupContainer(((QualifiedNameSyntax)syntax.Name).Left);
+                    actualName = ((QualifiedNameSyntax)name).Right.Name;
                     break;
                 default:
                     throw new InvalidOperationException();
@@ -602,13 +623,13 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             switch (syntax.Kind)
             {
                 case SyntaxKind.EqualsValueClause:
-                    return BindEqualsValue((EqualsValueClauseSyntax) syntax);
+                    return BindEqualsValue((EqualsValueClauseSyntax)syntax);
                 case SyntaxKind.StateInitializer:
-                    return BindStateInitializer((StateInitializerSyntax) syntax);
+                    return BindStateInitializer((StateInitializerSyntax)syntax);
                 case SyntaxKind.StateArrayInitializer:
-                    return BindStateArrayInitializer((StateArrayInitializerSyntax) syntax);
+                    return BindStateArrayInitializer((StateArrayInitializerSyntax)syntax);
                 case SyntaxKind.SamplerStateInitializer:
-                    return BindSamplerStateInitializer((SamplerStateInitializerSyntax) syntax);
+                    return BindSamplerStateInitializer((SamplerStateInitializerSyntax)syntax);
                 default:
                     throw new NotSupportedException(syntax.Kind.ToString());
             }

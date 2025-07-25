@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+ <html xmlns:msxsl="urn:schemas-microsoft-com:xslt"><head><meta content="en-us" http-equiv="Content-Language" /><meta content="text/html; charset=utf-16" http-equiv="Content-Type" /><title _locID="ConversionReport0">
+          Migration Report
+        </title><style> 
+                    /* Body style, for the entire document */
+                    body
+                    {
+                        background: #F3F3F4;
+                        color: #1E1E1F;
+                        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                        padding: 0;
+                        margin: 0;
+                    }
+
+                    /* Header1 style, used for the main title */
+                    h1
+                    {
+                        padding: 10px 0px 10px 10px;
+                        font-size: 21pt;
+                        background-color: #E2E2E2;
+                        border-bottom: 1px #C1C1C2 solid; 
+                        color: #201F20;
+                        margin: 0;
+                        font-weight: normal;
+                    }
+
+                    /* Header2 style, used for "Overview" and other sections */
+                    h2
+                    {
+                        font-size: 18pt;
+                        font-weight: normal;
+                        padding: 15px 0 5px 0;
+                        margin: 0;
+                    }
+
+                    /* Header3 style, used for sub-sections, such as project name */
+                    h3
+                    {
+                        font-weight: normal;
+                        font-size: 15pt;
+                        margin: 0;
+                        padding: 15px 0 5px 0;
+                        background-color: transparent;
+                    }
+
+                    /* Color all hyperlinks one color */
+                    a
+                    {
+                        color: #1382CE;
+                    }
+
+                    /* Table styles */ 
+                    table
+                    {
+                        border-spacing: 0 0;
+                        border-collapse: collapse;
+                        font-size: 10pt;
+                    }
+
+                    table th
+                    {
+                        background: #E7E7E8;
+                        text-align: left;
+                        text-decoration: none;
+                        font-weight: normal;
+                        padding: 3px 6px 3px 6px;
+                    }
+
+                    table td
+                    {
+                        vertical-align: top;
+                        padding: 3px 6px 5px 5px;
+                        margin: 0px;
+                        border: 1px solid #E7E7E8;
+                        background: #F7F7F8;
+                    }
+
+                    /* Local link is a style for hyperlinks that link to file:/// content, there are lots so color them as 'normal' text until the user mouse overs */
+                    .localLink
+                    {
+                        color: #1E1E1F;
+                        background: #EEEEED;
+                        text-decoration: none;
+                    }
+
+                    .localLink:hover
+                    {
+                        color: #1382CE;
+                        background: #FFFF99;
+                        text-decoration: none;
+                    }
+
+                    /* Center text, used in the over views cells that contain message level counts */ 
+                    .textCentered
+                    {
+                        text-align: center;
+                    }
+
+                    /* The message cells in message tables should take up all avaliable space */
+                    .messageCell
+                    {
+                        width: 100%;
+                    }
+
+                    /* Padding around the content after the h1 */ 
+                    #content 
+                    {
+	                    padding: 0px 12px 12px 12px; 
+                    }
+
+                    /* The overview table expands to width, with a max width of 97% */ 
+                    #overview table
+                    {
+                        width: auto;
+                        max-width: 75%; 
+                    }
+
+                    /* The messages tables are always 97% width */
+                    #messages table
+                    {
+                        width: 97%;
+                    }
+
+                    /* All Icons */
+                    .IconSuccessEncoded, .IconInfoEncoded, .IconWarningEncoded, .IconErrorEncoded
+                    {
+                        min-width:18px;
+                        min-height:18px; 
+                        background-repeat:no-repeat;
+                        background-position:center;
+                    }
+
+                    /* Success icon encoded */
+                    .IconSuccessEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconSuccess#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABcElEQVR4Xq2TsUsCURzHv15g8ZJcBWlyiYYgCIWcb9DFRRwMW5TA2c0/QEFwFkxxUQdxVlBwCYWOi6IhWgQhBLHJUCkhLr/BW8S7gvrAg+N+v8/v+x68Z8MGy+XSCyABQAXgBgHGALoASkIIDWSLeLBetdHryMjd5IxQPWT4rn1c/P7+xxp72Cs9m5SZ0Bq2vPnbPFafK2zDvmNHypdC0BPkLlQhxJsCAhQoZwdZU5mwxh720qGo8MzTxTTKZDPCx2HoVzp6lz0Q9tKhyx0kGs8Ny+TkWRKk8lCROwEduhyg9l/6lunOPSfmH3NUH6uQ0KHLAe7JYvJjevm+DAMGJHToKtigE+vwvIidxLamb8IBY9e+C5LiXREkfho3TSd06HJA13/oh6T51MTsfQbHrsMynQ5dDihFjiK8JJAU9AKIWTp76dCVN7HWHrajmUEGvyF9nkbAE6gLIS7kTUyuf2gscLoJrElZo/Mvj+nPz/kLTmfnEwP3tB0AAAAASUVORK5CYII=);
+                    }
+
+                    /* Information icon encoded */
+                    .IconInfoEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconInformation#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABHElEQVR4Xs2TsUoDQRRF7wwoziokjZUKadInhdhukR9YP8DMX1hYW+QvdsXa/QHBbcXC7W0CamWTQnclFutceIQJwwaWNLlwm5k5d94M76mmaeCrrmsLYOocY12FcxZFUeozCqKqqgYA8uevv1H6VuPxcwlfk5N92KHBxfFeCSAxxswlYAW/Xr989x/mv9gkhtyMDhcAxgzRsp7flj8B/HF1RsMXq+NZMkopaHe7lbKxQUEIGbKsYNoGn969060hZBkQex/W8oRQwsQaW2o3Ago2SVcJUzAgY3N0lTCZZm+zPS8HB51gMmS1DEYyOz9acKO1D8JWTlafKIMxdhvlfdyT94Vv5h7P8Ky7nQzACmhvKq3zk3PjW9asz9D/1oigecsioooAAAAASUVORK5CYII=);
+                    }
+
+                    /* Warning icon encoded */
+                    .IconWarningEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconWarning#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAx0lEQVR4XpWSMQ7CMAxFf4xAyBMLCxMrO8dhaBcuwdCJS3RJBw7SA/QGTCxdWJgiQYWKXJWKIXHIlyw5lqr34tQgEOdcBsCOx5yZK3hCCKdYXneQkh4pEfqzLfu+wVDSyyzFoJjfz9NB+pAF+eizx2Vruts0k15mPgvS6GYvpVtQhB61IB/dk6AF6fS4Ben0uIX5odtFe8Q/eW1KvFeH4e8khT6+gm5B+t3juyDt7n0jpe+CANTd+oTUjN/U3yVaABnSUjFz/gFq44JaVSCXeQAAAABJRU5ErkJggg==);
+                    }
+
+                    /* Error icon encoded */
+                    .IconErrorEncoded
+                    {
+                        /* Note: Do not delete the comment below. It is used to verify the correctness of the encoded image resource below before the product is released */
+                        /* [---XsltValidateInternal-Base64EncodedImage:IconError#Begin#background-image: url(data:image/png;base64,#Separator#);#End#] */
+                        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQElEQVR4XqWTvUoEQRCE6wYPZUA80AfwAQz23uCMjA7MDRQEIzPBVEyNTQUFIw00vcQTTMzuAh/AxEQQT8HF/3G/oGGnEUGuoNnd6qoZuqltyKEsyzVJq5I6rnUp6SjGeGhESikzzlc1eL7opfuVbrqbU1Zw9NCgtQMaZpY0eNnaaL2fHusvTK5vKu7sjSS1Y4y3QUA6K3e3Mau5UFDyMP7tYF9o8cAHZv68vipoIJg971PZIZ5HiwdvYGGvFVFHmGmZ2MxwmQYPXubPl9Up0tfoMQGetXd6mRbvhBw+boZ6WF7Mbv1+GsHRk0fQmPAH1GfmZirbCfDJ61tw3Px8/8pZsPAG4jlVhcPgZ7adwNWBB68lkRQWFiTgFlbnLY3DGGM7izIJIyT/jjIvEJw6fdJTc6krDzh6aMwMP9bvDH4ADSsa9uSWVJkAAAAASUVORK5CYII=);
+                    }
+                 </style><script type="text/javascript" language="javascript"> 
+          
+            // Startup 
+            // Hook up the the loaded event for the document/window, to linkify the document content
+            var startupFunction = function() { linkifyElement("messages"); };
+            
+            if(window.attachEvent)
+            {
+              window.attachEvent('onload', startupFunction);
+            }
+            else if (window.addEventListener) 
+            {
+              window.addEventListener('load', startupFunction, false);
+            }
+            else 
+            {
+              document.addEventListener('load', startupFunction, false);
+            } 
+            
+            // Toggles the visibility of table rows with the specified name 
+            function toggleTableRowsByName(name)
+            {
+               var allRows = document.getElementsByTagName('tr');
+               for (i=0; i < allRows.length; i++)
+               {
+                  var currentName = allRows[i].getAttribute('name');
+                  if(!!currentName && currentName.indexOf(name) == 0)
+                  {
+                      var isVisible = allRows[i].style.display == ''; 
+                      isVisible ? allRows[i].style.display = 'none' : allRows[i].style.display = '';
+                  }
+               }
+            }
+            
+            function scrollToFirstVisibleRow(name) 
+            {
+               var allRows = document.getElementsByTagName('tr');
+               for (i=0; i < allRows.length; i++)
+               {
+                  var currentName = allRows[i].getAttribute('name');
+                  var isVisible = allRows[i].style.display == ''; 
+                  if(!!currentName && currentName.indexOf(name) == 0 && isVisible)
+                  {
+                     allRows[i].scrollIntoView(true); 
+                     return true; 
+                  }
+               }
+               
+               return false;
+            }
+            
+            // Linkifies the specified text content, replaces candidate links with html links 
+            function linkify(text)
+            {
+                 if(!text || 0 === text.length)
+                 {
+                     return text; 
+                 }
+
+                 // Find http, https and ftp links and replace them with hyper links 
+                 var urlLink = /(http|https|ftp)\:\/\/[a-zA-Z0-9\-\.]+(:[a-zA-Z0-9]*)?\/?([a-zA-Z0-9\-\._\?\,\/\\\+&%\$#\=~;\{\}])*/gi;
+                 
+                 return text.replace(urlLink, '<a href="$&">$&</a>') ;
+            }
+            
+            // Linkifies the specified element by ID
+            function linkifyElement(id)
+            {
+                var element = document.getElementById(id);
+                if(!!element)
+                {
+                  element.innerHTML = linkify(element.innerHTML); 
+                }
+            }
+            
+            function ToggleMessageVisibility(projectName)
+            {
+              if(!projectName || 0 === projectName.length)
+              {
+                return; 
+              }
+              
+              toggleTableRowsByName("MessageRowClass" + projectName);
+              toggleTableRowsByName('MessageRowHeaderShow' + projectName);
+              toggleTableRowsByName('MessageRowHeaderHide' + projectName); 
+            }
+            
+            function ScrollToFirstVisibleMessage(projectName)
+            {
+              if(!projectName || 0 === projectName.length)
+              {
+                return; 
+              }
+              
+              // First try the 'Show messages' row
+              if(!scrollToFirstVisibleRow('MessageRowHeaderShow' + projectName))
+              {
+                // Failed to find a visible row for 'Show messages', try an actual message row 
+                scrollToFirstVisibleRow('MessageRowClass' + projectName); 
+              }
+            }
+           </script></head><body><h1 _locID="ConversionReport">
+          Migration Report - </h1><div id="content"><h2 _locID="OverviewTitle">Overview</h2><div id="overview"><table><tr><th></th><th _locID="ProjectTableHeader">Project</th><th _locID="PathTableHeader">Path</th><th _locID="ErrorsTableHeader">Errors</th><th _locID="WarningsTableHeader">Warnings</th><th _locID="MessagesTableHeader">Messages</th></tr><tr><td class="IconErrorEncoded" /><td><strong><a href="#ShaderTools.Editor.VisualStudio">ShaderTools.Editor.VisualStudio</a></strong></td><td>ShaderTools.Editor.VisualStudio\ShaderTools.Editor.VisualStudio.csproj</td><td class="textCentered"><a href="#ShaderTools.Editor.VisualStudioError">1</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconErrorEncoded" /><td><strong><a href="#ShaderTools.VisualStudio.LanguageServices">ShaderTools.VisualStudio.LanguageServices</a></strong></td><td>ShaderTools.VisualStudio.LanguageServices\ShaderTools.VisualStudio.LanguageServices.csproj</td><td class="textCentered"><a href="#ShaderTools.VisualStudio.LanguageServicesError">1</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconErrorEncoded" /><td><strong><a href="#ShaderTools.VisualStudio.LanguageServices.Hlsl">ShaderTools.VisualStudio.LanguageServices.Hlsl</a></strong></td><td>ShaderTools.VisualStudio.LanguageServices.Hlsl\ShaderTools.VisualStudio.LanguageServices.Hlsl.csproj</td><td class="textCentered"><a href="#ShaderTools.VisualStudio.LanguageServices.HlslError">1</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconErrorEncoded" /><td><strong><a href="#ShaderTools.VisualStudio.LanguageServices.ShaderLab">ShaderTools.VisualStudio.LanguageServices.ShaderLab</a></strong></td><td>ShaderTools.VisualStudio.LanguageServices.ShaderLab\ShaderTools.VisualStudio.LanguageServices.ShaderLab.csproj</td><td class="textCentered"><a href="#ShaderTools.VisualStudio.LanguageServices.ShaderLabError">1</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconErrorEncoded" /><td><strong><a href="#ShaderTools.VisualStudio.SyntaxVisualizer">ShaderTools.VisualStudio.SyntaxVisualizer</a></strong></td><td>ShaderTools.VisualStudio.SyntaxVisualizer\ShaderTools.VisualStudio.SyntaxVisualizer.csproj</td><td class="textCentered"><a href="#ShaderTools.VisualStudio.SyntaxVisualizerError">1</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#CodeAnalysis">CodeAnalysis</a></strong></td><td>CodeAnalysis</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#EditorFeatures">EditorFeatures</a></strong></td><td>EditorFeatures</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#Features">Features</a></strong></td><td>Features</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#LanguageServer">LanguageServer</a></strong></td><td>LanguageServer</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis">ShaderTools.CodeAnalysis</a></strong></td><td>ShaderTools.CodeAnalysis\ShaderTools.CodeAnalysis.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.EditorFeatures">ShaderTools.CodeAnalysis.EditorFeatures</a></strong></td><td>ShaderTools.CodeAnalysis.EditorFeatures\ShaderTools.CodeAnalysis.EditorFeatures.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.EditorFeatures.Text">ShaderTools.CodeAnalysis.EditorFeatures.Text</a></strong></td><td>ShaderTools.CodeAnalysis.EditorFeatures.Text\ShaderTools.CodeAnalysis.EditorFeatures.Text.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Features">ShaderTools.CodeAnalysis.Features</a></strong></td><td>ShaderTools.CodeAnalysis.Features\ShaderTools.CodeAnalysis.Features.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl">ShaderTools.CodeAnalysis.Hlsl</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl\ShaderTools.CodeAnalysis.Hlsl.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.EditorFeatures">ShaderTools.CodeAnalysis.Hlsl.EditorFeatures</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.EditorFeatures\ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests">ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests\ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.Features">ShaderTools.CodeAnalysis.Hlsl.Features</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.Features\ShaderTools.CodeAnalysis.Hlsl.Features.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.Features.Tests">ShaderTools.CodeAnalysis.Hlsl.Features.Tests</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.Features.Tests\ShaderTools.CodeAnalysis.Hlsl.Features.Tests.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.Tests">ShaderTools.CodeAnalysis.Hlsl.Tests</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.Tests\ShaderTools.CodeAnalysis.Hlsl.Tests.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Hlsl.Workspaces">ShaderTools.CodeAnalysis.Hlsl.Workspaces</a></strong></td><td>ShaderTools.CodeAnalysis.Hlsl.Workspaces\ShaderTools.CodeAnalysis.Hlsl.Workspaces.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.ShaderLab">ShaderTools.CodeAnalysis.ShaderLab</a></strong></td><td>ShaderTools.CodeAnalysis.ShaderLab\ShaderTools.CodeAnalysis.ShaderLab.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures">ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures</a></strong></td><td>ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures\ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.ShaderLab.Features">ShaderTools.CodeAnalysis.ShaderLab.Features</a></strong></td><td>ShaderTools.CodeAnalysis.ShaderLab.Features\ShaderTools.CodeAnalysis.ShaderLab.Features.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.ShaderLab.Tests">ShaderTools.CodeAnalysis.ShaderLab.Tests</a></strong></td><td>ShaderTools.CodeAnalysis.ShaderLab.Tests\ShaderTools.CodeAnalysis.ShaderLab.Tests.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.ShaderLab.Workspaces">ShaderTools.CodeAnalysis.ShaderLab.Workspaces</a></strong></td><td>ShaderTools.CodeAnalysis.ShaderLab.Workspaces\ShaderTools.CodeAnalysis.ShaderLab.Workspaces.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Tests">ShaderTools.CodeAnalysis.Tests</a></strong></td><td>ShaderTools.CodeAnalysis.Tests\ShaderTools.CodeAnalysis.Tests.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Workspaces">ShaderTools.CodeAnalysis.Workspaces</a></strong></td><td>ShaderTools.CodeAnalysis.Workspaces\ShaderTools.CodeAnalysis.Workspaces.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.CodeAnalysis.Workspaces.Desktop">ShaderTools.CodeAnalysis.Workspaces.Desktop</a></strong></td><td>ShaderTools.CodeAnalysis.Workspaces.Desktop\ShaderTools.CodeAnalysis.Workspaces.Desktop.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.LanguageServer">ShaderTools.LanguageServer</a></strong></td><td>ShaderTools.LanguageServer\ShaderTools.LanguageServer.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.Testing">ShaderTools.Testing</a></strong></td><td>ShaderTools.Testing\ShaderTools.Testing.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#ShaderTools.Utilities">ShaderTools.Utilities</a></strong></td><td>ShaderTools.Utilities\ShaderTools.Utilities.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#SyntaxGenerator">SyntaxGenerator</a></strong></td><td>SyntaxGenerator\SyntaxGenerator.csproj</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#Tools">Tools</a></strong></td><td>Tools</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#Utilities">Utilities</a></strong></td><td>Utilities</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#VisualStudio">VisualStudio</a></strong></td><td>VisualStudio</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#Workspaces">Workspaces</a></strong></td><td>Workspaces</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#">0</a></td></tr><tr><td class="IconSuccessEncoded" /><td><strong><a href="#Solution"><span _locID="OverviewSolutionSpan">Solution</span></a></strong></td><td>ShaderTools.sln</td><td class="textCentered"><a>0</a></td><td class="textCentered"><a>0</a></td><td class="textCentered"><a href="#" onclick="ScrollToFirstVisibleMessage('Solution'); return false;">1</a></td></tr></table></div><h2 _locID="SolutionAndProjectsTitle">Solution and projects</h2><div id="messages"><a name="ShaderTools.Editor.VisualStudio" /><h3>ShaderTools.Editor.VisualStudio</h3><table><tr id="ShaderTools.Editor.VisualStudioHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="ErrorRowClassShaderTools.Editor.VisualStudio"><td class="IconErrorEncoded"><a name="ShaderTools.Editor.VisualStudioError" /></td><td class="messageCell"><strong>ShaderTools.Editor.VisualStudio\ShaderTools.Editor.VisualStudio.csproj:
+        </strong><span>The application which this project type is based on was not found. Please try this link for further information: http://go.microsoft.com/fwlink/?LinkID=299083&amp;projecttype=82b43b9b-a64c-4715-b499-d71e9ca2bd60</span></td></tr></table><a name="ShaderTools.VisualStudio.LanguageServices" /><h3>ShaderTools.VisualStudio.LanguageServices</h3><table><tr id="ShaderTools.VisualStudio.LanguageServicesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="ErrorRowClassShaderTools.VisualStudio.LanguageServices"><td class="IconErrorEncoded"><a name="ShaderTools.VisualStudio.LanguageServicesError" /></td><td class="messageCell"><strong>ShaderTools.VisualStudio.LanguageServices\ShaderTools.VisualStudio.LanguageServices.csproj:
+        </strong><span>The application which this project type is based on was not found. Please try this link for further information: http://go.microsoft.com/fwlink/?LinkID=299083&amp;projecttype=82b43b9b-a64c-4715-b499-d71e9ca2bd60</span></td></tr></table><a name="ShaderTools.VisualStudio.LanguageServices.Hlsl" /><h3>ShaderTools.VisualStudio.LanguageServices.Hlsl</h3><table><tr id="ShaderTools.VisualStudio.LanguageServices.HlslHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="ErrorRowClassShaderTools.VisualStudio.LanguageServices.Hlsl"><td class="IconErrorEncoded"><a name="ShaderTools.VisualStudio.LanguageServices.HlslError" /></td><td class="messageCell"><strong>ShaderTools.VisualStudio.LanguageServices.Hlsl\ShaderTools.VisualStudio.LanguageServices.Hlsl.csproj:
+        </strong><span>The application which this project type is based on was not found. Please try this link for further information: http://go.microsoft.com/fwlink/?LinkID=299083&amp;projecttype=82b43b9b-a64c-4715-b499-d71e9ca2bd60</span></td></tr></table><a name="ShaderTools.VisualStudio.LanguageServices.ShaderLab" /><h3>ShaderTools.VisualStudio.LanguageServices.ShaderLab</h3><table><tr id="ShaderTools.VisualStudio.LanguageServices.ShaderLabHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="ErrorRowClassShaderTools.VisualStudio.LanguageServices.ShaderLab"><td class="IconErrorEncoded"><a name="ShaderTools.VisualStudio.LanguageServices.ShaderLabError" /></td><td class="messageCell"><strong>ShaderTools.VisualStudio.LanguageServices.ShaderLab\ShaderTools.VisualStudio.LanguageServices.ShaderLab.csproj:
+        </strong><span>The application which this project type is based on was not found. Please try this link for further information: http://go.microsoft.com/fwlink/?LinkID=299083&amp;projecttype=82b43b9b-a64c-4715-b499-d71e9ca2bd60</span></td></tr></table><a name="ShaderTools.VisualStudio.SyntaxVisualizer" /><h3>ShaderTools.VisualStudio.SyntaxVisualizer</h3><table><tr id="ShaderTools.VisualStudio.SyntaxVisualizerHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="ErrorRowClassShaderTools.VisualStudio.SyntaxVisualizer"><td class="IconErrorEncoded"><a name="ShaderTools.VisualStudio.SyntaxVisualizerError" /></td><td class="messageCell"><strong>ShaderTools.VisualStudio.SyntaxVisualizer\ShaderTools.VisualStudio.SyntaxVisualizer.csproj:
+        </strong><span>The application which this project type is based on was not found. Please try this link for further information: http://go.microsoft.com/fwlink/?LinkID=299083&amp;projecttype=82b43b9b-a64c-4715-b499-d71e9ca2bd60</span></td></tr></table><a name="CodeAnalysis" /><h3>CodeAnalysis</h3><table><tr id="CodeAnalysisHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">CodeAnalysis logged no messages.
+                  </td></tr></table><a name="EditorFeatures" /><h3>EditorFeatures</h3><table><tr id="EditorFeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">EditorFeatures logged no messages.
+                  </td></tr></table><a name="Features" /><h3>Features</h3><table><tr id="FeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">Features logged no messages.
+                  </td></tr></table><a name="LanguageServer" /><h3>LanguageServer</h3><table><tr id="LanguageServerHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">LanguageServer logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis" /><h3>ShaderTools.CodeAnalysis</h3><table><tr id="ShaderTools.CodeAnalysisHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.EditorFeatures" /><h3>ShaderTools.CodeAnalysis.EditorFeatures</h3><table><tr id="ShaderTools.CodeAnalysis.EditorFeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.EditorFeatures logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.EditorFeatures.Text" /><h3>ShaderTools.CodeAnalysis.EditorFeatures.Text</h3><table><tr id="ShaderTools.CodeAnalysis.EditorFeatures.TextHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.EditorFeatures.Text logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Features" /><h3>ShaderTools.CodeAnalysis.Features</h3><table><tr id="ShaderTools.CodeAnalysis.FeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Features logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl" /><h3>ShaderTools.CodeAnalysis.Hlsl</h3><table><tr id="ShaderTools.CodeAnalysis.HlslHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.EditorFeatures" /><h3>ShaderTools.CodeAnalysis.Hlsl.EditorFeatures</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.EditorFeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.EditorFeatures logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests" /><h3>ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.TestsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.EditorFeatures.Tests logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.Features" /><h3>ShaderTools.CodeAnalysis.Hlsl.Features</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.FeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.Features logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.Features.Tests" /><h3>ShaderTools.CodeAnalysis.Hlsl.Features.Tests</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.Features.TestsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.Features.Tests logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.Tests" /><h3>ShaderTools.CodeAnalysis.Hlsl.Tests</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.TestsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.Tests logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Hlsl.Workspaces" /><h3>ShaderTools.CodeAnalysis.Hlsl.Workspaces</h3><table><tr id="ShaderTools.CodeAnalysis.Hlsl.WorkspacesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Hlsl.Workspaces logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.ShaderLab" /><h3>ShaderTools.CodeAnalysis.ShaderLab</h3><table><tr id="ShaderTools.CodeAnalysis.ShaderLabHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.ShaderLab logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures" /><h3>ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures</h3><table><tr id="ShaderTools.CodeAnalysis.ShaderLab.EditorFeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.ShaderLab.EditorFeatures logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.ShaderLab.Features" /><h3>ShaderTools.CodeAnalysis.ShaderLab.Features</h3><table><tr id="ShaderTools.CodeAnalysis.ShaderLab.FeaturesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.ShaderLab.Features logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.ShaderLab.Tests" /><h3>ShaderTools.CodeAnalysis.ShaderLab.Tests</h3><table><tr id="ShaderTools.CodeAnalysis.ShaderLab.TestsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.ShaderLab.Tests logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.ShaderLab.Workspaces" /><h3>ShaderTools.CodeAnalysis.ShaderLab.Workspaces</h3><table><tr id="ShaderTools.CodeAnalysis.ShaderLab.WorkspacesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.ShaderLab.Workspaces logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Tests" /><h3>ShaderTools.CodeAnalysis.Tests</h3><table><tr id="ShaderTools.CodeAnalysis.TestsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Tests logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Workspaces" /><h3>ShaderTools.CodeAnalysis.Workspaces</h3><table><tr id="ShaderTools.CodeAnalysis.WorkspacesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Workspaces logged no messages.
+                  </td></tr></table><a name="ShaderTools.CodeAnalysis.Workspaces.Desktop" /><h3>ShaderTools.CodeAnalysis.Workspaces.Desktop</h3><table><tr id="ShaderTools.CodeAnalysis.Workspaces.DesktopHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.CodeAnalysis.Workspaces.Desktop logged no messages.
+                  </td></tr></table><a name="ShaderTools.LanguageServer" /><h3>ShaderTools.LanguageServer</h3><table><tr id="ShaderTools.LanguageServerHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.LanguageServer logged no messages.
+                  </td></tr></table><a name="ShaderTools.Testing" /><h3>ShaderTools.Testing</h3><table><tr id="ShaderTools.TestingHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.Testing logged no messages.
+                  </td></tr></table><a name="ShaderTools.Utilities" /><h3>ShaderTools.Utilities</h3><table><tr id="ShaderTools.UtilitiesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">ShaderTools.Utilities logged no messages.
+                  </td></tr></table><a name="SyntaxGenerator" /><h3>SyntaxGenerator</h3><table><tr id="SyntaxGeneratorHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">SyntaxGenerator logged no messages.
+                  </td></tr></table><a name="Tools" /><h3>Tools</h3><table><tr id="ToolsHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">Tools logged no messages.
+                  </td></tr></table><a name="Utilities" /><h3>Utilities</h3><table><tr id="UtilitiesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">Utilities logged no messages.
+                  </td></tr></table><a name="VisualStudio" /><h3>VisualStudio</h3><table><tr id="VisualStudioHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">VisualStudio logged no messages.
+                  </td></tr></table><a name="Workspaces" /><h3>Workspaces</h3><table><tr id="WorkspacesHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr><td class="IconInfoEncoded" /><td class="messageCell" _locID="NoMessagesRow">Workspaces logged no messages.
+                  </td></tr></table><a name="Solution" /><h3 _locID="ProjectDisplayNameHeader">Solution</h3><table><tr id="SolutionHeaderRow"><th></th><th class="messageCell" _locID="MessageTableHeader">Message</th></tr><tr name="MessageRowHeaderShowSolution"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="ShowAdditionalMessages" href="#" name="SolutionMessage" onclick="ToggleMessageVisibility('Solution'); return false;">
+          Show 1 additional messages
+        </a></td></tr><tr name="MessageRowClassSolution" style="display: none"><td class="IconInfoEncoded"><a name="SolutionMessage" /></td><td class="messageCell"><strong>ShaderTools.sln:
+        </strong><span>The solution file does not require migration.</span></td></tr><tr style="display: none" name="MessageRowHeaderHideSolution"><td class="IconInfoEncoded" /><td class="messageCell"><a _locID="HideAdditionalMessages" href="#" name="SolutionMessage" onclick="ToggleMessageVisibility('Solution'); return false;">
+          Hide 1 additional messages
+        </a></td></tr></table></div></div></body></html>

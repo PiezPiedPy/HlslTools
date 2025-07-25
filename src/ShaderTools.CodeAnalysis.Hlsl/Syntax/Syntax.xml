@@ -642,6 +642,17 @@
       <Kind Name="SemicolonToken"/>
     </Field>
   </Node>
+  
+  <Node Name="ToggleDefinitionSyntax" Base="InitializerSyntax">
+    <TypeComment>
+      <summary></summary>
+    </TypeComment>
+    <Kind Name="ToggleDefinitionDeclaration"/>    
+    <Field Name="Name" Type="SyntaxToken">
+      <Kind Name="ToggleNameToken"/>
+    </Field>
+    <Field Name="StateInitializer" Type="StateInitializerSyntax"/>
+  </Node>
 
   <Node Name="ContinueStatementSyntax" Base="StatementSyntax">
     <TypeComment>

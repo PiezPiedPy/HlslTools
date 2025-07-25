@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Microsoft.CodeAnalysis.Text;
 using ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes;
 using ShaderTools.CodeAnalysis.Hlsl.Diagnostics;
+using ShaderTools.CodeAnalysis.Hlsl.Parser;
 using ShaderTools.CodeAnalysis.Hlsl.Symbols;
 using ShaderTools.CodeAnalysis.Hlsl.Syntax;
 using ShaderTools.CodeAnalysis.Symbols;
+using ShaderTools.CodeAnalysis.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ShaderTools.CodeAnalysis.Hlsl.Binding
 {
@@ -27,26 +31,56 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             switch (declaration.Kind)
             {
                 case SyntaxKind.VariableDeclarationStatement:
-                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax) declaration, parent);
+                    return BindVariableDeclarationStatement((VariableDeclarationStatementSyntax)declaration, parent);
                 case SyntaxKind.FunctionDeclaration:
-                    return BindFunctionDeclaration((FunctionDeclarationSyntax) declaration, parent);
+                    return BindFunctionDeclaration((FunctionDeclarationSyntax)declaration, parent);
                 case SyntaxKind.FunctionDefinition:
-                    return BindFunctionDefinition((FunctionDefinitionSyntax) declaration, parent);
+                    return BindFunctionDefinition((FunctionDefinitionSyntax)declaration, parent);
                 case SyntaxKind.ConstantBufferDeclaration:
-                    return BindConstantBufferDeclaration((ConstantBufferSyntax) declaration);
+                    return BindConstantBufferDeclaration((ConstantBufferSyntax)declaration);
                 case SyntaxKind.TypeDeclarationStatement:
-                    return BindTypeDeclaration((TypeDeclarationStatementSyntax) declaration, parent);
+                    return BindTypeDeclaration((TypeDeclarationStatementSyntax)declaration, parent);
                 case SyntaxKind.Namespace:
-                    return BindNamespace((NamespaceSyntax) declaration);
+                    return BindNamespace((NamespaceSyntax)declaration);
                 case SyntaxKind.TechniqueDeclaration:
-                    return BindTechniqueDeclaration((TechniqueSyntax) declaration);
+                    return BindTechniqueDeclaration((TechniqueSyntax)declaration);
                 case SyntaxKind.TypedefStatement:
-                    return BindTypedefStatement((TypedefStatementSyntax) declaration);
+                    return BindTypedefStatement((TypedefStatementSyntax)declaration);
                 case SyntaxKind.EmptyStatement:
-                    return BindEmptyStatement((EmptyStatementSyntax) declaration);
+                    return BindEmptyStatement((EmptyStatementSyntax)declaration);
+                case SyntaxKind.ToggleDefinitionDeclaration:
+                    return BindToggleDefinitionDeclaration((ToggleDefinitionSyntax)declaration, parent);
                 default:
                     throw new ArgumentOutOfRangeException(declaration.Kind.ToString());
             }
+        }
+
+        private BoundNode BindToggleDefinitionDeclaration(ToggleDefinitionSyntax declaration, Symbol parent)
+        {
+
+            var declareString = $"float {declaration.Name} = 1";
+
+            var syntax = SyntaxFactory.ParseCompilationUnit(new SourceFile(SourceText.From(declareString))).ChildNodes[0] as VariableDeclarationStatementSyntax;
+            //var test = SyntaxFactory.parsedi(new SourceFile(SourceText.From("#define TTTT 1")));
+
+
+            var toggleSymbol = new ToggleNameSymbol(declaration);
+            AddSymbol(toggleSymbol, declaration.Name.SourceRange);
+
+            var defaultTo = false;
+
+            foreach (StatePropertySyntax child in declaration.StateInitializer.Properties)
+            {
+                if (child.Name.Text.Equals("Default"))
+                {
+                    if (child.Value.Kind == SyntaxKind.TrueLiteralExpression)
+                    {
+                        defaultTo = true;
+                    }
+                }
+            }
+
+            return new BoundToggle(toggleSymbol, defaultTo);
         }
 
         private BoundNode BindTechniqueDeclaration(TechniqueSyntax declaration)
@@ -151,7 +185,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             switch (syntax.Kind)
             {
                 case SyntaxKind.SemanticName:
-                    var semanticSyntax = (SemanticSyntax) syntax;
+                    var semanticSyntax = (SemanticSyntax)syntax;
                     var semanticSymbol = IntrinsicSemantics.AllSemantics.FirstOrDefault(x => string.Equals(x.Name, semanticSyntax.Semantic.Text, StringComparison.OrdinalIgnoreCase))
                         ?? new SemanticSymbol(semanticSyntax.Semantic.Text, string.Empty, false, SemanticUsages.AllShaders);
                     return new BoundSemantic(semanticSymbol);
@@ -173,7 +207,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 {
                     var boundRankSpecifier = Bind(arrayRankSpecifier.Dimension, BindExpression);
                     if (boundRankSpecifier.Kind == BoundNodeKind.LiteralExpression)
-                        dimension = Convert.ToInt32(((BoundLiteralExpression) boundRankSpecifier).Value);
+                        dimension = Convert.ToInt32(((BoundLiteralExpression)boundRankSpecifier).Value);
                 }
                 variableType = new ArraySymbol(variableType, dimension);
             }
@@ -230,7 +264,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                     functionOwner = parent;
                     break;
                 case SyntaxKind.QualifiedDeclarationName:
-                    containerSymbol = LookupContainer(((QualifiedDeclarationNameSyntax) declaration.Name).Left);
+                    containerSymbol = LookupContainer(((QualifiedDeclarationNameSyntax)declaration.Name).Left);
                     if (containerSymbol == null)
                         return new BoundErrorNode();
                     isQualifiedName = true;
@@ -261,7 +295,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             else
             {
                 if (isQualifiedName)
-                    Diagnostics.ReportUndeclaredFunctionInNamespaceOrClass((QualifiedDeclarationNameSyntax) declaration.Name);
+                    Diagnostics.ReportUndeclaredFunctionInNamespaceOrClass((QualifiedDeclarationNameSyntax)declaration.Name);
                 functionSymbol = new SourceFunctionSymbol(declaration, parent, boundReturnType.TypeSymbol);
                 containerBinder.AddSymbol(functionSymbol, declaration.Name.SourceRange, true);
             }
@@ -270,7 +304,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 Bind(declaration.Semantic, BindVariableQualifier);
 
             var functionBinder = (functionOwner != null && (functionOwner.Kind == SymbolKind.Class || functionOwner.Kind == SymbolKind.Struct))
-                ? new StructMethodBinder(_sharedBinderState, this, (StructSymbol) functionOwner, functionSymbol)
+                ? new StructMethodBinder(_sharedBinderState, this, (StructSymbol)functionOwner, functionSymbol)
                 : new FunctionBinder(_sharedBinderState, this, functionSymbol);
 
             if (isQualifiedName)
@@ -326,7 +360,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
 
             invocableSymbol.ClearParameters();
             foreach (var parameter in invocableBinder.LocalSymbols.Values.SelectMany(x => x))
-                invocableSymbol.AddParameter((ParameterSymbol) parameter);
+                invocableSymbol.AddParameter((ParameterSymbol)parameter);
 
             return boundParameters.ToImmutableArray();
         }
@@ -364,10 +398,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 {
                     case SymbolKind.Class:
                     case SymbolKind.Struct:
-                        baseType = (StructSymbol) baseTypeTemp.TypeSymbol;
+                        baseType = (StructSymbol)baseTypeTemp.TypeSymbol;
                         break;
                     case SymbolKind.Interface:
-                        baseInterfaces.Add((InterfaceSymbol) baseTypeTemp.TypeSymbol);
+                        baseInterfaces.Add((InterfaceSymbol)baseTypeTemp.TypeSymbol);
                         break;
                 }
             }
@@ -409,15 +443,15 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 switch (memberSyntax.Kind)
                 {
                     case SyntaxKind.VariableDeclarationStatement:
-                        members.Add(structBinder.Bind((VariableDeclarationStatementSyntax) memberSyntax, x => structBinder.BindField(x, structSymbol)));
+                        members.Add(structBinder.Bind((VariableDeclarationStatementSyntax)memberSyntax, x => structBinder.BindField(x, structSymbol)));
                         addMemberSymbols();
                         break;
                     case SyntaxKind.FunctionDeclaration:
-                        members.Add(structBinder.Bind((FunctionDeclarationSyntax) memberSyntax, x => structBinder.BindFunctionDeclaration(x, structSymbol)));
+                        members.Add(structBinder.Bind((FunctionDeclarationSyntax)memberSyntax, x => structBinder.BindFunctionDeclaration(x, structSymbol)));
                         addMemberSymbols();
                         break;
                     case SyntaxKind.FunctionDefinition:
-                        members.Add(structBinder.Bind((FunctionDefinitionSyntax) memberSyntax, x => structBinder.BindFunctionDefinition(x, structSymbol)));
+                        members.Add(structBinder.Bind((FunctionDefinitionSyntax)memberSyntax, x => structBinder.BindFunctionDefinition(x, structSymbol)));
                         addMemberSymbols();
                         break;
                 }
@@ -459,9 +493,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             {
                 case SyntaxKind.ClassType:
                 case SyntaxKind.StructType:
-                    return BindStructDeclaration((StructTypeSyntax) syntax, parent);
+                    return BindStructDeclaration((StructTypeSyntax)syntax, parent);
                 case SyntaxKind.InterfaceType:
-                    return BindInterfaceDeclaration((InterfaceTypeSyntax) syntax, parent);
+                    return BindInterfaceDeclaration((InterfaceTypeSyntax)syntax, parent);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

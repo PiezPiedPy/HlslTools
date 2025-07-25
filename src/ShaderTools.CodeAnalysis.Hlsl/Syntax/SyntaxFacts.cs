@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes;
 using ShaderTools.CodeAnalysis.Hlsl.Symbols;
 
@@ -1368,12 +1369,12 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                 case SyntaxKind.Half4x2Keyword:
                 case SyntaxKind.Half4x3Keyword:
                 case SyntaxKind.Half4x4Keyword:
-				case SyntaxKind.Float16_tKeyword:
-				case SyntaxKind.Float16_t1Keyword:
-				case SyntaxKind.Float16_t2Keyword:
-				case SyntaxKind.Float16_t3Keyword:
-				case SyntaxKind.Float16_t4Keyword:
-				case SyntaxKind.Float16_t1x1Keyword:
+                case SyntaxKind.Float16_tKeyword:
+                case SyntaxKind.Float16_t1Keyword:
+                case SyntaxKind.Float16_t2Keyword:
+                case SyntaxKind.Float16_t3Keyword:
+                case SyntaxKind.Float16_t4Keyword:
+                case SyntaxKind.Float16_t1x1Keyword:
                 case SyntaxKind.Float16_t1x2Keyword:
                 case SyntaxKind.Float16_t1x3Keyword:
                 case SyntaxKind.Float16_t1x4Keyword:
@@ -1722,6 +1723,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         public static bool IsWord(this SyntaxToken token)
         {
             return token.Kind == SyntaxKind.IdentifierToken
+                || token.Kind == SyntaxKind.ToggleNameToken
                 || token.Kind.IsKeyword()
                 || token.Kind.IsPreprocessorKeyword();
         }

@@ -58,7 +58,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                     VisitErrorExpression((BoundErrorExpression) node);
                     break;
                 case BoundNodeKind.VariableExpression:
-                    VisitVariableExpression((BoundVariableExpression) node);
+                    VisitVariableExpression((BoundVariableExpression)node);
+                    break;
+                case BoundNodeKind.BoundToggleExpression:
+                    VisitToggleExpression((BoundToggleExpression)node);
                     break;
                 case BoundNodeKind.CompileExpression:
                     VisitCompileExpression((BoundCompileExpression)node);
@@ -66,6 +69,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                 default:
                     throw new InvalidOperationException(node.Kind.ToString());
             }
+        }
+
+        protected virtual void VisitToggleExpression(BoundToggleExpression node)
+        {
+
         }
 
         protected virtual void VisitCompileExpression(BoundCompileExpression node)

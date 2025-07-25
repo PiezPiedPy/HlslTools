@@ -196,6 +196,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 case SyntaxKind.TBufferKeyword:
                 case SyntaxKind.TechniqueKeyword:
                 case SyntaxKind.Technique10Keyword:
+                case SyntaxKind.ToggleNameToken:
                 case SyntaxKind.Technique11Keyword:
                     return true;
 

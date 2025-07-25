@@ -40,7 +40,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                     VisitNoOpStatement((BoundNoOpStatement) node);
                     break;
                 case BoundNodeKind.Error:
-                    VisitError((BoundErrorNode) node);
+                    VisitError((BoundErrorNode)node);
+                    break;
+                case BoundNodeKind.BoundToggleExpression:
+                    VisitToggle((BoundToggle)node);
                     break;
                 default:
                     throw new InvalidOperationException(node.Kind.ToString());
@@ -87,7 +90,12 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
 
         protected virtual void VisitSemantic(BoundSemantic node)
         {
-            
+
+        }
+
+        protected virtual void VisitToggle(BoundToggle node)
+        {
+
         }
 
         protected virtual void VisitRegisterLocation(BoundRegisterLocation node)

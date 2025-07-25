@@ -23,6 +23,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             // If that failed, parse as a declaration.
             return ParseDeclarationStatement();
         }
+        public VariableDeclarationSyntax ParseVariableDeclaration1()
+        {
+            return ParseVariableDeclaration();
+        }
 
         private VariableDeclarationStatementSyntax ParseVariableDeclarationStatement()
         {
