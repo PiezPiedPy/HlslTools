@@ -45,5 +45,7 @@ namespace ShaderTools.CodeAnalysis
         TypeParameter,
 
         CompletionWarning,
+
+        Toggle,
     }
 }

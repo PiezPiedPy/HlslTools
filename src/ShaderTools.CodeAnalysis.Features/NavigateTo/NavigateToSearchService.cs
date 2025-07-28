@@ -105,6 +105,7 @@ namespace ShaderTools.CodeAnalysis.NavigateTo
                 case SymbolKind.Namespace:
                     return NavigateToItemKind.Module;
                 case SymbolKind.ConstantBuffer:
+                case SymbolKind.Toggle:                        
                 case SymbolKind.Struct:
                 case SymbolKind.Technique:
                     return NavigateToItemKind.Structure;

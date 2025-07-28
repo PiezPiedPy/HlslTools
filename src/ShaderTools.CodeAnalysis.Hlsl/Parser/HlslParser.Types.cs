@@ -488,6 +488,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             {
                 case SyntaxKind.IdentifierToken:
                     return ParseName();
+                case SyntaxKind.ToggleNameToken:
+                    return ParseToggleName();
                 case SyntaxKind.StructKeyword:
                     return ParseStructType(SyntaxKind.StructKeyword);
                 case SyntaxKind.ClassKeyword:
@@ -512,6 +514,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             }
 
             return result;
+        }
+
+        private ToggleNameSyntax ParseToggleName()
+        {
+            return new ToggleNameSyntax(Match(SyntaxKind.ToggleNameToken));
         }
 
         protected IdentifierNameSyntax ParseIdentifier()

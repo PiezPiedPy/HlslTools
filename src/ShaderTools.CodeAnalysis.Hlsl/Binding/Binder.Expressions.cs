@@ -95,8 +95,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
                     return BindArrayInitializerExpression((ArrayInitializerExpressionSyntax)node);
                 case SyntaxKind.CompileExpression:
                     return BindCompileExpression((CompileExpressionSyntax)node);
-                case SyntaxKind.ToggleExpression:
-                    return BindToggleExpression((IdentifierNameSyntax)node);
+                case SyntaxKind.ToggleName:
+                    return BindToggleExpression((ToggleNameSyntax)node);
                 default:
                     throw new ArgumentOutOfRangeException(node.Kind.ToString());
             }
@@ -307,7 +307,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             var name = node.Name;
             var symbols = LookupVariable(name).ToImmutableArray();
 
-            foreach (var toggle in LookupSymbols<ToggleNameSymbol>(name))
+            foreach (var toggle in LookupSymbols<ToggleSymbol>(name))
             {
                 return new BoundToggleExpression(toggle, new BoundScalarType(IntrinsicTypes.Bool));
             }
@@ -331,14 +331,14 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             return new BoundVariableExpression(symbol);
         }
 
-        private BoundExpression BindToggleExpression(IdentifierNameSyntax node)
+        private BoundExpression BindToggleExpression(ToggleNameSyntax node)
         {
             if (node.Name.IsMissing)
                 return new BoundErrorExpression();
 
             var name = node.Name;
 
-            foreach (var toggle in LookupSymbols<ToggleNameSymbol>(name))
+            foreach (var toggle in LookupSymbols<ToggleSymbol>(name))
             {
                 return new BoundToggleExpression(toggle, new BoundScalarType(IntrinsicTypes.Bool));
             }

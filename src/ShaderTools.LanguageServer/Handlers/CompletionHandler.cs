@@ -149,6 +149,8 @@ namespace ShaderTools.LanguageServer.Handlers
                     return CompletionItemKind.TypeParameter;
                 case Glyph.CompletionWarning:
                     return CompletionItemKind.Snippet;
+                case Glyph.Toggle:
+                    return CompletionItemKind.Variable;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(glyph));
             }

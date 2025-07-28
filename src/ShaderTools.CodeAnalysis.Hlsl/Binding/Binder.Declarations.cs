@@ -64,7 +64,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Binding
             //var test = SyntaxFactory.parsedi(new SourceFile(SourceText.From("#define TTTT 1")));
 
 
-            var toggleSymbol = new ToggleNameSymbol(declaration);
+            var toggleSymbol = new ToggleSymbol(declaration);
             AddSymbol(toggleSymbol, declaration.Name.SourceRange);
 
             var defaultTo = false;

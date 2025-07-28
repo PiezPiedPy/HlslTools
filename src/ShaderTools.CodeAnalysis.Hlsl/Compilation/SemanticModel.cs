@@ -73,7 +73,17 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
             if (technique != null)
                 return GetDeclaredSymbol(technique);
 
+            var toggle = node as ToggleDefinitionSyntax;
+            if(toggle != null)
+                return GetDeclaredSymbol(toggle);
+
             return null;
+        }
+
+        public ToggleSymbol GetDeclaredSymbol(ToggleDefinitionSyntax syntax)
+        {
+            var result = _bindingResult.GetBoundNode(syntax) as BoundToggle;
+            return result?.ToggleSymbol;
         }
 
         public ParameterSymbol GetDeclaredSymbol(ParameterSyntax syntax)
@@ -214,13 +224,19 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
                 case BoundNodeKind.IntrinsicObjectType:
                 case BoundNodeKind.IntrinsicScalarType:
                 case BoundNodeKind.IntrinsicVectorType:
-                    return GetSymbol((BoundType) expression);
+                    return GetSymbol((BoundType)expression);
+                case BoundNodeKind.BoundToggleExpression:
+                    return GetSymbol((BoundToggleExpression)expression);
                 default:
                     // TODO: More bound expression types.
                     return null;
             }
         }
 
+        private static Symbol GetSymbol(BoundToggleExpression expression)
+        {
+            return expression.Symbol;
+        }
         private static Symbol GetSymbol(BoundVariableExpression expression)
         {
             return expression.Symbol;

@@ -9,10 +9,11 @@ using System.Text;
 
 namespace ShaderTools.CodeAnalysis.Hlsl.Symbols
 {
-    public class ToggleNameSymbol : Symbol
+    public class ToggleSymbol : Symbol
     {
         public ToggleDefinitionSyntax Syntax { get; }
-        public ToggleNameSymbol(ToggleDefinitionSyntax syntax) : base(SymbolKind.Toggle, syntax.Name.Text, "Predefined Toggle", null)
+
+        public ToggleSymbol(ToggleDefinitionSyntax syntax) : base(SymbolKind.Toggle, syntax.Name.Name.Text, $"Current Value: {syntax.GetDefaultValue()}", null)
         {
             Syntax = syntax;
             SourceTree = syntax.SyntaxTree;

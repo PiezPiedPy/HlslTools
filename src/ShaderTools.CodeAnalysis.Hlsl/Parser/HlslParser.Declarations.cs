@@ -298,7 +298,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
         private ToggleDefinitionSyntax ParseToggleDeclaration()
         {
-            var name = Match(SyntaxKind.ToggleNameToken);
+            var name = new ToggleNameSyntax(Match(SyntaxKind.ToggleNameToken));
             var stateInitializer = ParseStateInitializer();
 
             var syntax= new ToggleDefinitionSyntax(name, stateInitializer);

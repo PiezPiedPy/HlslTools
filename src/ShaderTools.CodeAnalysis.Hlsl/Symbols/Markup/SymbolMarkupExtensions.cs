@@ -53,11 +53,21 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Symbols.Markup
                     markup.AppendAttribute((AttributeSymbol) symbol, format);
                     break;
                 case SymbolKind.ConstantBuffer:
-                    markup.AppendConstantBuffer((ConstantBufferSymbol) symbol, format);
+                    markup.AppendConstantBuffer((ConstantBufferSymbol)symbol, format);
+                    break;
+                case SymbolKind.Toggle:
+                    markup.AppendToggleInfo((ToggleSymbol)symbol, format);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(symbol), symbol.Kind.ToString());
             }
+        }
+
+        private static void AppendToggleInfo(this ICollection<SymbolMarkupToken> markup, ToggleSymbol symbol, SymbolDisplayFormat format)
+        {
+            markup.AppendPlainText("(toggle)");
+            markup.AppendSpace();
+            markup.AppendName(SymbolMarkupKind.GlobalVariableName, symbol.Name);
         }
 
         private static void AppendFunctionSymbolInfo(this ICollection<SymbolMarkupToken> markup, FunctionSymbol symbol, SymbolDisplayFormat format)
@@ -69,7 +79,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Symbols.Markup
 
                 if (symbol.Parent is TypeSymbol)
                 {
-                    markup.AppendTypeName((TypeSymbol) symbol.Parent);
+                    markup.AppendTypeName((TypeSymbol)symbol.Parent);
                     markup.AppendPunctuation(".");
                 }
             }

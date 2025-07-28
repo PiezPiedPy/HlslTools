@@ -2535,6 +2535,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
                     return SyntaxKind.RasterizerStateKeyword;
                 case "register":
                     return SyntaxKind.RegisterKeyword;
+                case "layout":
+                    return SyntaxKind.RegisterKeyword;
                 case "return":
                     return SyntaxKind.ReturnKeyword;
                 case "row_major":

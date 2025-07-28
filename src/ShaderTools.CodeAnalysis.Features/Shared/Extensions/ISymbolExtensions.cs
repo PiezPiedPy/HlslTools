@@ -55,6 +55,8 @@ namespace ShaderTools.CodeAnalysis.Shared.Extensions
                     return Glyph.Structure;
                 case SymbolKind.TypeAlias:
                     return Glyph.Typedef;
+                case SymbolKind.Toggle:
+                    return Glyph.Toggle;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

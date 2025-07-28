@@ -733,6 +733,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         ToggleDefinitionDeclaration,
         ToggleInitializer,
         ToggleNameToken,
+        ToggleName,
         ToggleExpression,
 
         TogglePrefixToken,

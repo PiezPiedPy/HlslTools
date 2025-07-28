@@ -143,6 +143,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 case SyntaxKind.IdentifierToken:
                     expr = ParseIdentifierOrFunctionInvocationExpression();
                     break;
+                case SyntaxKind.ToggleNameToken:
+                    expr = ParseTokenExpression();
+                    break;
                 case SyntaxKind.FalseKeyword:
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.IntegerLiteralToken:
@@ -193,6 +196,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             if (Current.Kind == SyntaxKind.OpenParenToken)
                 return ParseFunctionInvocationExpression(name);
             return name;
+        }
+
+        private ExpressionSyntax ParseTokenExpression()
+        {
+            return ParseToggleName();
         }
 
         private FunctionInvocationExpressionSyntax ParseFunctionInvocationExpression(NameSyntax name)
