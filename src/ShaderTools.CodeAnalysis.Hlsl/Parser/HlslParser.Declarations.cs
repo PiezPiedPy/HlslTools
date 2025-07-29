@@ -301,7 +301,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             var name = new ToggleNameSyntax(Match(SyntaxKind.ToggleNameToken));
             var stateInitializer = ParseStateInitializer();
 
-            var syntax= new ToggleDefinitionSyntax(name, stateInitializer);
+            var syntax = new ToggleDefinitionSyntax(name, stateInitializer);
 
             //var declareString = $"float {name.Text.Replace("@", "TOGGLE")} = 1";
             //var root=SyntaxFactory.Parse(new SourceFile(SourceText.From(declareString)), null, null, p => p.ParseVariableDeclaration()).Root;

@@ -736,7 +736,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Syntax
         ToggleName,
         ToggleExpression,
 
-        TogglePrefixToken,
+        ToggleConditionStatement,
 
         BadToken
     }

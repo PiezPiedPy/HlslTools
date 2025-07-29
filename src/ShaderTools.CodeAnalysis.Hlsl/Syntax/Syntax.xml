@@ -666,6 +666,24 @@
     <Field Name="StateInitializer" Type="StateInitializerSyntax"/>
   </Node>
 
+  <Node Name="ToggleConditionStatementSyntax" Base="StatementSyntax">
+    <TypeComment>
+      <summary></summary>
+    </TypeComment>
+    <Kind Name="IfStatement"/>
+    <Field Name="OpenBracketToken" Type="SyntaxToken">
+      <Kind Name="OpenBracketToken"/>
+    </Field>
+    <Field Name="Condition" Type="ExpressionSyntax">
+      <PropertyComment>
+        <summary></summary>
+      </PropertyComment>
+    </Field>
+    <Field Name="CloseBracketToken" Type="SyntaxToken">
+      <Kind Name="CloseBracketToken"/>
+    </Field>
+  </Node>
+
   <Node Name="ContinueStatementSyntax" Base="StatementSyntax">
     <TypeComment>
       <summary></summary>

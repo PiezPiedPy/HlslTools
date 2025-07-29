@@ -43,7 +43,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
             for (int i = 1; i <= LastTerminatorState; i <<= 1)
             {
-                TerminatorState isolated = _termState & (TerminatorState) i;
+                TerminatorState isolated = _termState & (TerminatorState)i;
                 if (isolated != 0)
                 {
                     switch (isolated)
@@ -184,6 +184,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             return CanStartGlobalDeclaration(Current.Kind);
         }
 
+        private bool IsPossibleToggleDeclaration()
+        {
+            return Lookahead.Kind == SyntaxKind.OpenBraceToken;
+        }
+
         private bool CanStartGlobalDeclaration(SyntaxKind kind)
         {
             switch (kind)
@@ -196,10 +201,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 case SyntaxKind.TBufferKeyword:
                 case SyntaxKind.TechniqueKeyword:
                 case SyntaxKind.Technique10Keyword:
-                case SyntaxKind.ToggleNameToken:
                 case SyntaxKind.Technique11Keyword:
                     return true;
-
+                case SyntaxKind.ToggleNameToken:
+                    return IsPossibleToggleDeclaration();
                 default:
                     if (IsPossibleDeclarationStatement())
                         return true;
@@ -293,7 +298,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                     .WithDiagnostic(Diagnostic.Create(
                         HlslMessageProvider.Instance,
                         tokens.First().SourceRange,
-                        (int) DiagnosticId.TokenUnexpected,
+                        (int)DiagnosticId.TokenUnexpected,
                         tokens.First().Text));
             }
 

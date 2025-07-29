@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ShaderTools.CodeAnalysis.Hlsl.Binding.BoundNodes;
 using ShaderTools.CodeAnalysis.Hlsl.Diagnostics;
+using ShaderTools.CodeAnalysis.Hlsl.Symbols;
 using ShaderTools.CodeAnalysis.Hlsl.Syntax;
 using ShaderTools.CodeAnalysis.Syntax;
 
 namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 {
     internal partial class HlslParser
-	{
+    {
         public StatementSyntax ParseStatement()
         {
             var current = _tokenIndex;
@@ -28,9 +30,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             return ParseVariableDeclaration();
         }
 
-        private VariableDeclarationStatementSyntax ParseVariableDeclarationStatement()
+        private VariableDeclarationStatementSyntax ParseVariableDeclarationStatement(bool mslStyleAnnotation = false)
         {
-            var variableDeclaration = ParseVariableDeclaration();
+            var variableDeclaration = ParseVariableDeclaration(mslStyleAnnotation);
             var semicolon = Match(SyntaxKind.SemiToken);
             return new VariableDeclarationStatementSyntax(variableDeclaration, semicolon);
         }
@@ -41,13 +43,21 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 list.Add(NextToken());
         }
 
-        private VariableDeclarationSyntax ParseVariableDeclaration()
+        private VariableDeclarationSyntax ParseVariableDeclaration(bool mslStyleAnnotation = false)
         {
             TypeSyntax type;
             var mods = new List<SyntaxToken>();
             var variables = new List<SyntaxNodeBase>();
             ParseDeclarationModifiers(mods);
-            ParseVariableDeclaration(out type, variables);
+            if (mslStyleAnnotation)
+            {
+                type = new ScalarTypeSyntax([new SyntaxToken(SyntaxKind.StringKeyword, true, Current.SourceRange, Current.FileSpan)]);
+                ParseVariableDeclarators(type, variables, variableDeclarationsExpected: true);
+            }
+            else
+            {
+                ParseVariableDeclaration(out type, variables);
+            }
             return new VariableDeclarationSyntax(mods, type, new SeparatedSyntaxList<VariableDeclaratorSyntax>(variables));
         }
 
@@ -78,7 +88,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             if (type is TypeDefinitionSyntax && (Current.Kind == SyntaxKind.SemiToken || Current.Kind == SyntaxKind.EndOfFileToken))
             {
                 var semi = Match(SyntaxKind.SemiToken);
-                return new TypeDeclarationStatementSyntax(mods, (TypeDefinitionSyntax) type, semi);
+                return new TypeDeclarationStatementSyntax(mods, (TypeDefinitionSyntax)type, semi);
             }
             else
             {
@@ -216,9 +226,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                                 isNonEqualsBinaryToken)
                             {
                                 var missingIdentifier = InsertMissingToken(SyntaxKind.IdentifierToken);
-                                return new VariableDeclaratorSyntax(missingIdentifier, 
-                                    new List<ArrayRankSpecifierSyntax>(), 
-                                    new List<VariableDeclaratorQualifierSyntax>(), 
+                                return new VariableDeclaratorSyntax(missingIdentifier,
+                                    new List<ArrayRankSpecifierSyntax>(),
+                                    new List<VariableDeclaratorQualifierSyntax>(),
                                     null, null);
                             }
                         }
@@ -376,7 +386,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 _allowLinearAndPointAsIdentifiers = false;
                 _allowGreaterThanTokenAroundRhsExpression = false;
             }
-            
+
             var greaterThan = NextTokenIf(SyntaxKind.GreaterThanToken);
             var semicolon = Match(SyntaxKind.SemiToken);
 
@@ -480,6 +490,11 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             return Current.Kind == SyntaxKind.OpenBraceToken || IsPossibleExpression();
         }
 
+        private bool IsPossibleToggleCondition()
+        {
+            return Current.Kind == SyntaxKind.OpenBracketToken && (Lookahead.Kind == SyntaxKind.OpenParenToken || Lookahead.Kind == SyntaxKind.ToggleNameToken);
+        }
+
         /// <summary>
         /// Parses any statement but a declaration statement. Returns null if the lookahead looks like a declaration.
         /// </summary>
@@ -490,6 +505,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
         {
             if (IsPossibleDeclarationStatement())
                 return null;
+
+            if (IsPossibleToggleCondition())
+                return ParseToggleCondition();
 
             var attributes = ParseAttributes();
 
@@ -578,14 +596,17 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             }
         }
 
-        private bool IsPossibleVariableDeclarationStatement()
+        private bool IsPossibleVariableDeclarationStatement(bool mslStyleAnnotation = false)
         {
-            return IsPossibleDeclarationStatement();
+            return IsPossibleDeclarationStatement(mslStyleAnnotation);
         }
 
-        private bool IsPossibleDeclarationStatement()
+        private bool IsPossibleDeclarationStatement(bool mslStyleAnnotation = false)
         {
             var tk = Current.Kind;
+
+            if (mslStyleAnnotation && tk == SyntaxKind.IdentifierToken && Lookahead.Kind == SyntaxKind.EqualsToken && Peek(2).Kind == SyntaxKind.StringLiteralToken)
+                return true;
 
             // Although "<identifier> <literal>" is invalid, it's common enough that we try to parse it anyway, and report on the error.
             if (tk == SyntaxKind.IdentifierToken && (Lookahead.Kind == SyntaxKind.IdentifierToken || Lookahead.Kind.IsLiteral()))
@@ -736,7 +757,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             var statement = ParseEmbeddedStatement();
 
             return new ForStatementSyntax(attributes, @for, openParen, decl,
-                initializer, semi, condition, semi2, 
+                initializer, semi, condition, semi2,
                 incrementor, closeParen, statement);
         }
 
@@ -782,6 +803,16 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             }
 
             return new IfStatementSyntax(attributes, @if, openParen, condition, closeParen, statement, @else);
+        }
+
+        private IfStatementSyntax ParseToggleCondition()
+        {
+            var openParen = Match(SyntaxKind.OpenBracketToken);
+            var condition = ParseExpression();
+            var closeParen = Match(SyntaxKind.CloseBracketToken);
+            var statement = ParseEmbeddedStatement();
+
+            return new IfStatementSyntax([], null, openParen, condition, closeParen, statement, null);
         }
 
         private ReturnStatementSyntax ParseReturnStatement(List<AttributeDeclarationSyntaxBase> attributes)
