@@ -90,6 +90,7 @@ namespace ShaderTools.LanguageServer
                 .AddHandler(new DocumentHighlightHandler(_workspace, documentSelector))
                 .AddHandler(new DocumentSymbolsHandler(_workspace, documentSelector))
                 .AddHandler(new HoverHandler(_workspace, documentSelector))
+                .AddHandler(new SemanticTokenHandler(_workspace, documentSelector))
                 .AddHandler(new SignatureHelpHandler(_workspace, documentSelector)));
 
             var diagnosticService = _workspace.Services.GetService<IDiagnosticService>();

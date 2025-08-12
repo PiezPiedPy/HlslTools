@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis.Classification;
 using ShaderTools.CodeAnalysis.Hlsl.Compilation;
@@ -58,6 +59,14 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Classification
         {
             CreateTag(node.Name, HlslClassificationTypeNames.ConstantBufferIdentifier);
 
+            // foreach (var declaration in node.Declarations)
+            // {
+            //     foreach (var variable in declaration.Declaration.Variables)
+            //     {
+            //         VisitVariableDeclarator(variable);
+            //     }
+            // }
+
             base.VisitConstantBuffer(node);
         }
 
@@ -70,6 +79,47 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Classification
                     : HlslClassificationTypeNames.FunctionIdentifier);
 
             base.VisitFunctionDefinition(node);
+        }
+
+        public override void VisitToggleDefinition(ToggleDefinitionSyntax node)
+        {
+            var symbol = _semanticModel.GetDeclaredSymbol(node);
+            if (symbol != null)
+                CreateTag(node.Name.Name, HlslClassificationTypeNames.ToggleIdentifier);
+
+            base.VisitToggleDefinition(node);
+        }
+
+        public override void VisitAnnotations(AnnotationsSyntax node)
+        {
+            foreach (var annotation in node.Annotations)
+            {
+                CreateTag(annotation.Declaration.Variables.First().Identifier,HlslClassificationTypeNames.AnnotationIdentifier);
+            }            
+            base.VisitAnnotations(node);
+        }
+
+        public override void VisitToggleName(ToggleNameSyntax node)
+        {
+            CreateTag(node.Name, HlslClassificationTypeNames.MacroIdentifier);
+            base.VisitToggleName(node);
+        }
+
+        public override void VisitStateInitializer(StateInitializerSyntax node)
+        {
+            foreach (var statePropertySyntax in node.Properties)
+            {
+                CreateTag(statePropertySyntax.Name,HlslClassificationTypeNames.AnnotationIdentifier);
+            }            
+            
+            base.VisitStateInitializer(node);
+        }
+
+        public override void VisitSamplerStateInitializer(SamplerStateInitializerSyntax node)
+        {
+            VisitStateInitializer(node.StateInitializer);
+            
+            base.VisitSamplerStateInitializer(node);
         }
 
         public override void VisitFunctionDeclaration(FunctionDeclarationSyntax node)

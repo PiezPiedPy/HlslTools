@@ -37,7 +37,7 @@ namespace ShaderTools.LanguageServer.Handlers
             var completionService = document.GetLanguageService<CompletionService>();
 
             Microsoft.CodeAnalysis.Completion.CompletionTrigger trigger;
-            if (request.Context.TriggerKind == OmniSharp.Extensions.LanguageServer.Protocol.Models.CompletionTriggerKind.TriggerCharacter)
+            if (request.Context.TriggerKind == CompletionTriggerKind.TriggerCharacter)
             {
                 trigger = Microsoft.CodeAnalysis.Completion.CompletionTrigger.CreateInsertionTrigger(request.Context.TriggerCharacter[0]);
             }

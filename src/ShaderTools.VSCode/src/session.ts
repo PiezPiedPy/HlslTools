@@ -2,13 +2,14 @@ import os = require('os');
 import path = require('path');
 import vscode = require('vscode');
 
-import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient';
+import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 
 let HlslLanguageId = 'hlsl';
 
 let LanguageIds = [HlslLanguageId];
 
-enum SessionStatus {
+enum SessionStatus
+{
     NotStarted,
     Initializing,
     Running,
@@ -16,7 +17,8 @@ enum SessionStatus {
     Failed
 }
 
-export class SessionManager {
+export class SessionManager
+{
     private ShowSessionMenuCommandName = "ShaderTools.ShowSessionMenu";
 
     private sessionStatus: SessionStatus;
@@ -25,18 +27,22 @@ export class SessionManager {
     private languageServerClient: LanguageClient = undefined;
     private platform: NodeJS.Platform;
 
-    constructor() {
+    constructor()
+    {
         this.platform = os.platform();
         this.registerCommands();
     }
 
-    public start() {
+    public start()
+    {
         this.createStatusBarItem();
         this.startEditorServices();
     }
 
-    public stop(): Promise<void> {
-        if (this.sessionStatus === SessionStatus.Failed) {
+    public stop(): Promise<void>
+    {
+        if (this.sessionStatus === SessionStatus.Failed)
+        {
             // Before moving further, clear out the client and process if
             // the process is already dead (i.e. it crashed)
             this.languageServerClient = undefined;
@@ -47,17 +53,19 @@ export class SessionManager {
         var promise = Promise.resolve();
 
         // Close the language server client
-        if (this.languageServerClient !== undefined) {
+        if (this.languageServerClient !== undefined)
+        {
             promise = this.languageServerClient.stop();
             this.languageServerClient = undefined;
         }
 
         this.sessionStatus = SessionStatus.NotStarted;
-        
+
         return promise;
     }
 
-    public dispose() : void {
+    public dispose(): void
+    {
         // Stop the current session
         this.stop();
 
@@ -65,15 +73,18 @@ export class SessionManager {
         this.registeredCommands.forEach(command => { command.dispose(); });
     }
 
-    private registerCommands() : void {
+    private registerCommands(): void
+    {
         this.registeredCommands = [
             vscode.commands.registerCommand('ShaderTools.RestartSession', () => { this.restartSession(); }),
             vscode.commands.registerCommand(this.ShowSessionMenuCommandName, () => { this.showSessionMenu(); })
         ]
     }
 
-    private startEditorServices() {
-        try {
+    private startEditorServices()
+    {
+        try
+        {
             this.setSessionStatus(
                 "Starting HLSL Tools...",
                 SessionStatus.Initializing);
@@ -81,7 +92,7 @@ export class SessionManager {
             var serverPath = this.getServerPath();
             var serverExe = path.resolve(__dirname, `../bin/${serverPath}`);
 
-            var startArgs = [ ];
+            var startArgs = [];
             //startArgs.push("--logfilepath", editorServicesLogPath);
 
             var debugArgs = startArgs.slice(0);
@@ -89,7 +100,7 @@ export class SessionManager {
 
             let serverOptions: ServerOptions = {
                 run: { command: serverExe, args: startArgs },
-                debug: {command: serverExe, args: debugArgs }
+                debug: { command: serverExe, args: debugArgs }
             };
 
             let clientOptions: LanguageClientOptions = {
@@ -106,25 +117,27 @@ export class SessionManager {
                     serverOptions,
                     clientOptions);
 
-            this.languageServerClient.onReady().then(
-                () => {
+            this.languageServerClient.start().then(
+                () =>
+                {
                     this.setSessionStatus(
                         'HLSL Tools',
                         SessionStatus.Running);
                 },
-                (reason) => {
+                (reason) =>
+                {
                     this.setSessionFailure("Could not start language service: ", reason);
                 });
-
-            this.languageServerClient.start();
         } catch (e)
         {
             this.setSessionFailure("The language service could not be started: ", e);
         }
     }
 
-    private getServerPath() {
-        switch (this.platform) {
+    private getServerPath()
+    {
+        switch (this.platform)
+        {
             case "win32":
                 return "win-x64/ShaderTools.LanguageServer.exe";
 
@@ -136,13 +149,16 @@ export class SessionManager {
         }
     }
 
-    private restartSession() {
+    private restartSession()
+    {
         this.stop();
         this.start();
     }
 
-    private createStatusBarItem() {
-        if (this.statusBarItem == undefined) {
+    private createStatusBarItem()
+    {
+        if (this.statusBarItem == undefined)
+        {
             // Create the status bar item and place it right next
             // to the language indicator
             this.statusBarItem =
@@ -152,27 +168,33 @@ export class SessionManager {
 
             this.statusBarItem.command = this.ShowSessionMenuCommandName;
             this.statusBarItem.show();
-            vscode.window.onDidChangeActiveTextEditor(textEditor => {
+            vscode.window.onDidChangeActiveTextEditor(textEditor =>
+            {
                 if (textEditor === undefined
-                    || LanguageIds.indexOf(textEditor.document.languageId) === -1) {
+                    || LanguageIds.indexOf(textEditor.document.languageId) === -1)
+                {
                     this.statusBarItem.hide();
                 }
-                else {
+                else
+                {
                     this.statusBarItem.show();
                 }
             })
         }
     }
 
-    private setSessionStatus(statusText: string, status: SessionStatus): void {
+    private setSessionStatus(statusText: string, status: SessionStatus): void
+    {
         var statusIconText = "$(code) ";
         var statusColor = "#affc74";
 
-        if (status == SessionStatus.Initializing) {
+        if (status == SessionStatus.Initializing)
+        {
             statusIconText = "$(sync) ";
             statusColor = "#f3fc74";
         }
-        else if (status == SessionStatus.Failed) {
+        else if (status == SessionStatus.Failed)
+        {
             statusIconText = "$(alert) ";
             statusColor = "#fcc174";
         }
@@ -182,31 +204,36 @@ export class SessionManager {
         this.statusBarItem.text = statusIconText + statusText;
     }
 
-    private setSessionFailure(message: string, ...additionalMessages: string[]) {
+    private setSessionFailure(message: string, ...additionalMessages: string[])
+    {
         this.setSessionStatus(
             "HLSL Tools Initialization Error",
             SessionStatus.Failed);
     }
 
-    private showSessionMenu() {
+    private showSessionMenu()
+    {
         var menuItems: SessionMenuItem[] = [];
 
         if (this.sessionStatus === SessionStatus.Initializing ||
             this.sessionStatus === SessionStatus.NotStarted ||
-            this.sessionStatus === SessionStatus.Stopping) {
+            this.sessionStatus === SessionStatus.Stopping)
+        {
 
             // Don't show a menu for these states
             return;
         }
 
-        if (this.sessionStatus === SessionStatus.Running) {
+        if (this.sessionStatus === SessionStatus.Running)
+        {
             menuItems = [
                 new SessionMenuItem(
                     "Restart Current Session",
                     () => { this.restartSession(); }),
             ];
         }
-        else if (this.sessionStatus === SessionStatus.Failed) {
+        else if (this.sessionStatus === SessionStatus.Failed)
+        {
             menuItems = [
                 new SessionMenuItem("Session initialization failed."),
             ];
@@ -219,7 +246,8 @@ export class SessionManager {
     }
 }
 
-class SessionMenuItem implements vscode.QuickPickItem {
+class SessionMenuItem implements vscode.QuickPickItem
+{
     public description: string;
 
     constructor(

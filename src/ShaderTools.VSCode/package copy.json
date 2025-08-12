@@ -5,7 +5,7 @@
   "publisher": "hsy",
   "description": "Rich HLSL language support for Visual Studio Code(TimGJones)",
   "engines": {
-    "vscode": "^1.98.0"
+    "vscode": "^1.102.0"
   },
   "license": "SEE LICENSE IN LICENSE.txt",
   "homepage": "https://github.com/tgjones/HlslTools/tree/master/src/ShaderTools.VSCode/README.md",
@@ -52,17 +52,27 @@
     }
   },
   "dependencies": {
-    "@types/node": "20.x",
-    "child_process": "^1.0.2",
-    "vscode-jsonrpc": "^8.2.1",
-    "vscode-languageclient": "^9.0.1"
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-languageserver-types": "^3.17.5"
   },
   "devDependencies": {
-    "@types/vscode": "^1.98.0"
+    "@types/node": "^6.14.13",
+    "@types/vscode": "^1.102.0",
+    "@vscode/vsce": "^3.6.0",
+    "typescript": "^4.9.5"
   },
+  "extensionDependencies": [
+    "vscode.hlsl"
+  ],
   "scripts": {
-    "vscode:prepublish": "tsc -p ./ || echo done",
-    "compile": "tsc -watch -p ./"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -b",
+    "watch": "tsc -b -w",
+    "lint": "eslint src",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd .."
   },
   "private": true
 }

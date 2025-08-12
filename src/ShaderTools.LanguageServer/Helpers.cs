@@ -8,6 +8,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using ShaderTools.CodeAnalysis;
 using ShaderTools.CodeAnalysis.NavigateTo;
+using ShaderTools.CodeAnalysis.Shared.Extensions;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 namespace ShaderTools.LanguageServer
@@ -45,6 +46,15 @@ namespace ShaderTools.LanguageServer
                     Character = linePositionSpan.End.Character
                 }
             };
+        }
+
+        public static TextSpan ToSpan(SourceText sourceText, Range range)
+        {
+            var start = range.Start;
+            var end=range.End;
+
+            return new TextSpan(sourceText.Lines.GetPosition(new LinePosition(start.Line, start.Character)),
+                sourceText.Lines.GetPosition(new LinePosition(end.Line, end.Character)));
         }
 
         private const string DiagnosticSourceName = "Shader Tools";
