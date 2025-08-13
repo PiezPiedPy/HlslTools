@@ -13,10 +13,12 @@ namespace ShaderTools.LanguageServer
             // TODO: Make this an option.
             var logFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "ShaderTools");
 
+#if DEBUG
             //if (args.Contains("--launch-debugger"))
             {
                 Debugger.Launch();
             }
+#endif
 
             LanguageServerHost languageServerHost = null;
             try

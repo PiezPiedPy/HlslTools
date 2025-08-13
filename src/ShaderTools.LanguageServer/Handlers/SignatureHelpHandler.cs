@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
@@ -13,13 +12,14 @@ namespace ShaderTools.LanguageServer.Handlers
         private readonly LanguageServerWorkspace _workspace;
         private readonly SignatureHelpRegistrationOptions _registrationOptions;
 
-        public SignatureHelpHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        public SignatureHelpHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
             _registrationOptions = new SignatureHelpRegistrationOptions
             {
                 DocumentSelector = documentSelector
-            }; ;
+            };
+            ;
         }
 
         public Task<SignatureHelp> Handle(SignatureHelpParams request, CancellationToken token)
@@ -31,8 +31,10 @@ namespace ShaderTools.LanguageServer.Handlers
             return signatureHelpService.GetResultAsync(document, position, token);
         }
 
-        SignatureHelpRegistrationOptions IRegistration<SignatureHelpRegistrationOptions>.GetRegistrationOptions() => _registrationOptions;
-
-        void ICapability<SignatureHelpCapability>.SetCapability(SignatureHelpCapability capability) { }
+        public SignatureHelpRegistrationOptions GetRegistrationOptions(SignatureHelpCapability capability,
+            ClientCapabilities clientCapabilities)
+        {
+            return _registrationOptions;
+        }
     }
 }

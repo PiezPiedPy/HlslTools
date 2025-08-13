@@ -69,9 +69,9 @@ namespace ShaderTools.LanguageServer
 
         private async Task InitializeAsync(Stream input, Stream output)
         {
-            var documentSelector = new DocumentSelector(
+            var documentSelector = new TextDocumentSelector(
                 LanguageNames.AllLanguages
-                    .Select(x => new DocumentFilter
+                    .Select(x => new TextDocumentFilter
                     {
                         Language = x.ToLowerInvariant()
                     }));
@@ -83,6 +83,7 @@ namespace ShaderTools.LanguageServer
                     .AddSerilog(_logger)
                     .AddLanguageProtocolLogging()
                     .SetMinimumLevel(_minLogLevel))
+                .AddHandler("textDocument/register", new TextureRegisterHandler(_workspace, documentSelector))
                 .AddHandler(new TextDocumentSyncHandler(_workspace, documentSelector))
                 .AddHandler(new CompletionHandler(_workspace, documentSelector))
                 .AddHandler(new DefinitionHandler(_workspace, documentSelector))

@@ -10,24 +10,20 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 
 namespace ShaderTools.LanguageServer.Handlers
 {
-    internal sealed class TextDocumentSyncHandler : ITextDocumentSyncHandler
+    internal sealed class TextDocumentSyncHandler(
+        LanguageServerWorkspace workspace,
+        TextDocumentSelector documentSelector)
+        : ITextDocumentSyncHandler
     {
-        private readonly LanguageServerWorkspace _workspace;
-        private readonly TextDocumentChangeRegistrationOptions _changeRegistrationOptions;
-
-        public TextDocumentSyncHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        private readonly TextDocumentChangeRegistrationOptions _changeRegistrationOptions = new()
         {
-            _workspace = workspace;
-            _changeRegistrationOptions = new TextDocumentChangeRegistrationOptions
-            {
-                DocumentSelector = documentSelector,
-                SyncKind = TextDocumentSyncKind.Incremental,
-            };
-        }
+            DocumentSelector = documentSelector,
+            SyncKind = TextDocumentSyncKind.Incremental,
+        };
 
         public TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
         {
-            var document = _workspace.GetDocument(uri);
+            var document = workspace.GetDocument(uri);
 
             return new TextDocumentAttributes(
                 uri,
@@ -36,14 +32,14 @@ namespace ShaderTools.LanguageServer.Handlers
 
         public Task<Unit> Handle(DidChangeTextDocumentParams notification, CancellationToken cancellationToken)
         {
-            var document = _workspace.GetDocument(notification.TextDocument.Uri);
+            var document = workspace.GetDocument(notification.TextDocument.Uri);
 
             if (document == null)
             {
                 return Unit.Task;
             }
 
-            _workspace.UpdateDocument(
+            workspace.UpdateDocument(
                 document,
                 notification.ContentChanges.Select(x =>
                     Helpers.ToTextChange(
@@ -56,7 +52,7 @@ namespace ShaderTools.LanguageServer.Handlers
 
         public Task<Unit> Handle(DidOpenTextDocumentParams notification, CancellationToken cancellationToken)
         {
-            _workspace.OpenDocument(
+            workspace.OpenDocument(
                 notification.TextDocument.Uri,
                 notification.TextDocument.Text,
                 notification.TextDocument.LanguageId);
@@ -66,27 +62,57 @@ namespace ShaderTools.LanguageServer.Handlers
 
         public Task<Unit> Handle(DidCloseTextDocumentParams notification, CancellationToken cancellationToken)
         {
-            var document = _workspace.GetDocument(notification.TextDocument.Uri);
+            var document = workspace.GetDocument(notification.TextDocument.Uri);
 
             if (document != null)
             {
-                _workspace.CloseDocument(document.Id);
+                workspace.CloseDocument(document.Id);
             }
 
             return Unit.Task;
         }
 
-        public Task<Unit> Handle(DidSaveTextDocumentParams notification, CancellationToken cancellationToken) => Unit.Task;
+        public Task<Unit> Handle(DidSaveTextDocumentParams notification, CancellationToken cancellationToken) =>
+            Unit.Task;
 
-        TextDocumentChangeRegistrationOptions IRegistration<TextDocumentChangeRegistrationOptions>.GetRegistrationOptions() => _changeRegistrationOptions;
-
-        TextDocumentRegistrationOptions IRegistration<TextDocumentRegistrationOptions>.GetRegistrationOptions()
+        TextDocumentChangeRegistrationOptions
+            IRegistration<TextDocumentChangeRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(
+                TextSynchronizationCapability capability,
+                ClientCapabilities clientCapabilities)
         {
-            return _changeRegistrationOptions;
+            return new TextDocumentChangeRegistrationOptions()
+            {
+                DocumentSelector = documentSelector,
+                SyncKind = TextDocumentSyncKind.Incremental
+            };
         }
 
-        void ICapability<SynchronizationCapability>.SetCapability(SynchronizationCapability capability) { }
+        TextDocumentOpenRegistrationOptions
+            IRegistration<TextDocumentOpenRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(
+                TextSynchronizationCapability capability,
+                ClientCapabilities clientCapabilities)
+        {
+            return new TextDocumentOpenRegistrationOptions()
+            {
+                DocumentSelector = documentSelector,
+            };
+        }
 
-        TextDocumentSaveRegistrationOptions IRegistration<TextDocumentSaveRegistrationOptions>.GetRegistrationOptions() => null;
+        TextDocumentCloseRegistrationOptions
+            IRegistration<TextDocumentCloseRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(
+                TextSynchronizationCapability capability,
+                ClientCapabilities clientCapabilities)
+        {
+            return new TextDocumentCloseRegistrationOptions() { DocumentSelector = documentSelector };
+        }
+
+        TextDocumentSaveRegistrationOptions
+            IRegistration<TextDocumentSaveRegistrationOptions, TextSynchronizationCapability>.GetRegistrationOptions(
+                TextSynchronizationCapability capability,
+                ClientCapabilities clientCapabilities)
+        {
+            return new TextDocumentSaveRegistrationOptions()
+                { DocumentSelector = documentSelector, IncludeText = true };
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
@@ -9,36 +10,28 @@ using ShaderTools.CodeAnalysis.NavigateTo;
 
 namespace ShaderTools.LanguageServer.Handlers
 {
-    internal sealed class WorkspaceSymbolsHandler : IWorkspaceSymbolsHandler
+    internal sealed class WorkspaceSymbolsHandler(LanguageServerWorkspace workspace) : IWorkspaceSymbolsHandler
     {
-        private readonly LanguageServerWorkspace _workspace;
-        private readonly WorkspaceSymbolRegistrationOptions _registrationOptions;
+        private readonly WorkspaceSymbolRegistrationOptions _registrationOptions = new();
 
-        public WorkspaceSymbolsHandler(LanguageServerWorkspace workspace)
+        public async Task<Container<WorkspaceSymbol>> Handle(WorkspaceSymbolParams request, CancellationToken cancellationToken)
         {
-            _workspace = workspace;
-            _registrationOptions = new WorkspaceSymbolRegistrationOptions();
-        }
+            var searchService = workspace.Services.GetService<INavigateToSearchService>();
 
-        public async Task<Container<SymbolInformation>> Handle(WorkspaceSymbolParams request, CancellationToken token)
-        {
-            var searchService = _workspace.Services.GetService<INavigateToSearchService>();
+            var symbols = ImmutableArray.CreateBuilder<WorkspaceSymbol>();
 
-            var symbols = ImmutableArray.CreateBuilder<SymbolInformation>();
-
-            foreach (var document in _workspace.CurrentDocuments.Documents)
+            foreach (var document in workspace.CurrentDocuments.Documents)
             {
-                await Helpers.FindSymbolsInDocument(searchService, document, request.Query, token, symbols);
+                await Helpers.FindSymbolsInDocumentAsync(searchService, document, request.Query, cancellationToken, symbols);
             }
 
-            return new Container<SymbolInformation>(symbols);
+            return new Container<WorkspaceSymbol>(symbols);
         }
 
-        WorkspaceSymbolRegistrationOptions IRegistration<WorkspaceSymbolRegistrationOptions>.GetRegistrationOptions()
+        public WorkspaceSymbolRegistrationOptions GetRegistrationOptions(WorkspaceSymbolCapability capability,
+            ClientCapabilities clientCapabilities)
         {
             return _registrationOptions;
         }
-
-        void ICapability<WorkspaceSymbolCapability>.SetCapability(WorkspaceSymbolCapability capability) { }
     }
 }

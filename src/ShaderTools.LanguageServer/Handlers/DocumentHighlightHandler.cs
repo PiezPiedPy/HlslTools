@@ -16,7 +16,7 @@ namespace ShaderTools.LanguageServer.Handlers
         private readonly LanguageServerWorkspace _workspace;
         private readonly DocumentHighlightRegistrationOptions _registrationOptions;
 
-        public DocumentHighlightHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        public DocumentHighlightHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
             _registrationOptions = new DocumentHighlightRegistrationOptions
@@ -60,11 +60,10 @@ namespace ShaderTools.LanguageServer.Handlers
             return result;
         }
 
-        DocumentHighlightRegistrationOptions IRegistration<DocumentHighlightRegistrationOptions>.GetRegistrationOptions()
+        public DocumentHighlightRegistrationOptions GetRegistrationOptions(DocumentHighlightCapability capability,
+            ClientCapabilities clientCapabilities)
         {
             return _registrationOptions;
         }
-
-        void ICapability<DocumentHighlightCapability>.SetCapability(DocumentHighlightCapability capability) { }
     }
 }

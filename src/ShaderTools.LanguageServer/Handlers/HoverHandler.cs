@@ -15,7 +15,7 @@ namespace ShaderTools.LanguageServer.Handlers
         private readonly LanguageServerWorkspace _workspace;
         private readonly HoverRegistrationOptions _registrationOptions;
 
-        public HoverHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        public HoverHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
             _registrationOptions = new HoverRegistrationOptions
@@ -58,9 +58,10 @@ namespace ShaderTools.LanguageServer.Handlers
                 return new Hover();
             }
         }
-
-        HoverRegistrationOptions IRegistration<HoverRegistrationOptions>.GetRegistrationOptions() => _registrationOptions;
-
-        void ICapability<HoverCapability>.SetCapability(HoverCapability capability) { }
+        
+        public HoverRegistrationOptions GetRegistrationOptions(HoverCapability capability, ClientCapabilities clientCapabilities)
+        {
+            return  _registrationOptions;
+        }
     }
 }

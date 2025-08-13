@@ -19,7 +19,7 @@ namespace ShaderTools.LanguageServer.Handlers
         private readonly LanguageServerWorkspace _workspace;
         private readonly CompletionRegistrationOptions _registrationOptions;
 
-        public CompletionHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        public CompletionHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
             _registrationOptions = new CompletionRegistrationOptions
@@ -156,11 +156,10 @@ namespace ShaderTools.LanguageServer.Handlers
             }
         }
 
-        CompletionRegistrationOptions IRegistration<CompletionRegistrationOptions>.GetRegistrationOptions()
+        public CompletionRegistrationOptions GetRegistrationOptions(CompletionCapability capability,
+            ClientCapabilities clientCapabilities)
         {
             return _registrationOptions;
         }
-
-        void ICapability<CompletionCapability>.SetCapability(CompletionCapability capability) { }
     }
 }

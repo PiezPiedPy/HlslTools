@@ -15,7 +15,7 @@ namespace ShaderTools.LanguageServer.Handlers
         private readonly LanguageServerWorkspace _workspace;
         private readonly DefinitionRegistrationOptions _registrationOptions;
 
-        public DefinitionHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        public DefinitionHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
             _registrationOptions = new DefinitionRegistrationOptions
@@ -51,11 +51,10 @@ namespace ShaderTools.LanguageServer.Handlers
             return locations;
         }
 
-        DefinitionRegistrationOptions IRegistration<DefinitionRegistrationOptions>.GetRegistrationOptions()
+        public DefinitionRegistrationOptions GetRegistrationOptions(DefinitionCapability capability,
+            ClientCapabilities clientCapabilities)
         {
             return _registrationOptions;
         }
-
-        void ICapability<DefinitionCapability>.SetCapability(DefinitionCapability capability) { }
     }
 }

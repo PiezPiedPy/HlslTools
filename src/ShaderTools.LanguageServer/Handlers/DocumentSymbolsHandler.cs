@@ -9,29 +9,30 @@ using ShaderTools.CodeAnalysis.NavigateTo;
 
 namespace ShaderTools.LanguageServer.Handlers
 {
-    internal sealed class DocumentSymbolsHandler : IDocumentSymbolHandler
+    internal sealed class DocumentSymbolsHandler(
+        LanguageServerWorkspace workspace,
+        TextDocumentSelector documentSelector)
+        : IDocumentSymbolHandler
     {
-        private readonly LanguageServerWorkspace _workspace;
-        private readonly DocumentSymbolRegistrationOptions _registrationOptions;
-
-        public DocumentSymbolsHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector)
+        private readonly DocumentSymbolRegistrationOptions _registrationOptions = new()
         {
-            _workspace = workspace;
-            _registrationOptions = new DocumentSymbolRegistrationOptions
-            {
-                DocumentSelector = documentSelector,
-            };
+            DocumentSelector = documentSelector,
+        };
+
+        public DocumentSymbolRegistrationOptions GetRegistrationOptions(DocumentSymbolCapability capability, ClientCapabilities clientCapabilities)
+        {
+            return _registrationOptions;
         }
 
         public async Task<SymbolInformationOrDocumentSymbolContainer> Handle(DocumentSymbolParams request, CancellationToken token)
         {
-            var document = _workspace.GetDocument(request.TextDocument.Uri);
+            var document = workspace.GetDocument(request.TextDocument.Uri);
 
-            var searchService = _workspace.Services.GetService<INavigateToSearchService>();
+            var searchService = workspace.Services.GetService<INavigateToSearchService>();
 
             var symbols = ImmutableArray.CreateBuilder<SymbolInformation>();
 
-            await Helpers.FindSymbolsInDocument(searchService, document, string.Empty, token, symbols);
+            await Helpers.FindSymbolsInDocumentAsync(searchService, document, string.Empty, token, symbols);
 
             var symbolsResult = ImmutableArray.CreateRange(
                 symbols.ToImmutable(), 
@@ -39,12 +40,5 @@ namespace ShaderTools.LanguageServer.Handlers
 
             return new SymbolInformationOrDocumentSymbolContainer(symbolsResult);
         }
-
-        DocumentSymbolRegistrationOptions IRegistration<DocumentSymbolRegistrationOptions>.GetRegistrationOptions()
-        {
-            return _registrationOptions;
-        }
-
-        void ICapability<DocumentSymbolCapability>.SetCapability(DocumentSymbolCapability capability) { }
     }
 }

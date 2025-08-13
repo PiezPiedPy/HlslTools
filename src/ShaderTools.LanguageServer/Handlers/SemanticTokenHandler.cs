@@ -10,9 +10,7 @@ using Microsoft.CodeAnalysis.Text;
 using OmniSharp.Extensions.LanguageServer.Protocol;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
-using OmniSharp.Extensions.LanguageServer.Protocol.Document.Proposals;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Models.Proposals;
 using ShaderTools.CodeAnalysis;
 using ShaderTools.CodeAnalysis.Classification;
 using ShaderTools.CodeAnalysis.Hlsl.Syntax;
@@ -26,6 +24,12 @@ namespace ShaderTools.LanguageServer.Handlers
 {
     internal class SemanticTokenHandler : SemanticTokensHandlerBase
     {
+        static SemanticTokensRegistrationOptions _options = new SemanticTokensRegistrationOptions
+        {
+            Full = new SemanticTokensCapabilityRequestFull(),
+            Legend = new SemanticTokensLegend()
+        };
+
         static class HlslClassificationTypeNames
         {
             public const string Punctuation = "Hlsl.Punctuation";
@@ -68,15 +72,20 @@ namespace ShaderTools.LanguageServer.Handlers
                 HlslClassificationTypeNames.NamespaceIdentifier => (SemanticTokenType.Namespace, []),
                 HlslClassificationTypeNames.GlobalVariableIdentifier => (SemanticTokenType.Property,
                     [SemanticTokenModifier.Declaration]),
-                HlslClassificationTypeNames.FieldIdentifier => (SemanticTokenType.Variable, [SemanticTokenModifier.Readonly]),
-                HlslClassificationTypeNames.LocalVariableIdentifier => (SemanticTokenType.Variable, [SemanticTokenModifier.Modification]),
-                HlslClassificationTypeNames.ParameterIdentifier => (SemanticTokenType.Parameter, [SemanticTokenModifier.Modification]),
-                HlslClassificationTypeNames.FunctionIdentifier => (SemanticTokenType.Function, [SemanticTokenModifier.Readonly]),
+                HlslClassificationTypeNames.FieldIdentifier => (SemanticTokenType.Variable,
+                    [SemanticTokenModifier.Readonly]),
+                HlslClassificationTypeNames.LocalVariableIdentifier => (SemanticTokenType.Variable,
+                    [SemanticTokenModifier.Modification]),
+                HlslClassificationTypeNames.ParameterIdentifier => (SemanticTokenType.Parameter,
+                    [SemanticTokenModifier.Modification]),
+                HlslClassificationTypeNames.FunctionIdentifier => (SemanticTokenType.Function,
+                    [SemanticTokenModifier.Readonly]),
                 HlslClassificationTypeNames.MethodIdentifier => (SemanticTokenType.Function, []),
                 HlslClassificationTypeNames.ClassIdentifier => (SemanticTokenType.Class, []),
                 HlslClassificationTypeNames.StructIdentifier => (SemanticTokenType.Struct, []),
                 HlslClassificationTypeNames.InterfaceIdentifier => (SemanticTokenType.Interface, []),
-                HlslClassificationTypeNames.ConstantBufferVariableIdentifier => (SemanticTokenType.Variable, [SemanticTokenModifier.Declaration]),
+                HlslClassificationTypeNames.ConstantBufferVariableIdentifier => (SemanticTokenType.Variable,
+                    [SemanticTokenModifier.Declaration]),
                 HlslClassificationTypeNames.ConstantBufferIdentifier => (SemanticTokenType.Class, []),
                 HlslClassificationTypeNames.MacroIdentifier => (SemanticTokenType.Macro, []),
                 HlslClassificationTypeNames.ToggleIdentifier => (SemanticTokenType.Macro, []),
@@ -86,18 +95,7 @@ namespace ShaderTools.LanguageServer.Handlers
 
         private readonly LanguageServerWorkspace _workspace;
 
-        public SemanticTokenHandler(LanguageServerWorkspace workspace, DocumentSelector documentSelector) : base(
-            new SemanticTokensRegistrationOptions()
-            {
-                DocumentSelector = documentSelector,
-                Full = true,
-                Range = true,
-                Legend = new SemanticTokensLegend
-                {
-                    TokenTypes = SemanticTokenType.Defaults.Select(x => x.ToString()).ToArray(),
-                    TokenModifiers = SemanticTokenModifier.Defaults.Select(x => x.ToString()).ToArray()
-                }
-            })
+        public SemanticTokenHandler(LanguageServerWorkspace workspace, TextDocumentSelector documentSelector)
         {
             _workspace = workspace;
         }
@@ -126,10 +124,6 @@ namespace ShaderTools.LanguageServer.Handlers
                 classifiedSpans,
                 cancellationToken);
 
-            //var unified = classifiedSpans.Select(x => x.ClassificationType)
-            //    .Distinct()
-            //    .ToList();
-
             foreach (var classifiedSpan in classifiedSpans)
             {
                 if (classifiedSpan.ClassificationType == ClassificationTypeNames.WhiteSpace)
@@ -139,22 +133,23 @@ namespace ShaderTools.LanguageServer.Handlers
 
                 var range = Helpers.ToRange(document.SourceText, classifiedSpan.TextSpan);
                 var content = document.SourceText.GetSubText(classifiedSpan.TextSpan).ToString();
-                try
-                {
-                    var (semanticTokenType, semanticTokenModifiers) = GetClassificationType(classifiedSpan.ClassificationType);
-                    builder.Push(range, semanticTokenType, semanticTokenModifiers);
-                }
-                catch (Exception e)
-                {
-                    var a = e.Message;
-                }
+                var (semanticTokenType, semanticTokenModifiers) =
+                    GetClassificationType(classifiedSpan.ClassificationType);
+                builder.Push(range, semanticTokenType, semanticTokenModifiers);
             }
         }
 
-        protected override async Task<SemanticTokensDocument> GetSemanticTokensDocument(
+        protected override Task<SemanticTokensDocument> GetSemanticTokensDocument(
             ITextDocumentIdentifierParams @params, CancellationToken cancellationToken)
         {
-            return new SemanticTokensDocument(GetRegistrationOptions().Legend);
+            return Task.FromResult(new SemanticTokensDocument(_options.Legend));
+        }
+
+        protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(
+            SemanticTokensCapability capability,
+            ClientCapabilities clientCapabilities)
+        {
+            return _options;
         }
     }
 }

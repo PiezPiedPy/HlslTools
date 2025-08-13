@@ -105,7 +105,7 @@ namespace ShaderTools.LanguageServer
             return new LinePosition((int)position.Line, (int) position.Character);
         }
 
-        public static async Task FindSymbolsInDocument(
+        public static async Task FindSymbolsInDocumentAsync(
             INavigateToSearchService searchService,
             Document document,
             string searchPattern,
@@ -115,17 +115,40 @@ namespace ShaderTools.LanguageServer
             var foundSymbols = await searchService.SearchDocumentAsync(document, searchPattern, cancellationToken);
 
             resultsBuilder.AddRange(foundSymbols
-               .Select(r => new SymbolInformation
-               {
-                   ContainerName = r.AdditionalInformation,
-                   Kind = GetSymbolKind(r.Kind),
-                   Location = new Location
-                   {
-                       Uri = ToUri(r.NavigableItem.SourceSpan.File.FilePath),
-                       Range = ToRange(r.NavigableItem.Document.SourceText, r.NavigableItem.SourceSpan.Span)
-                   },
-                   Name = r.Name
-               }));
+                .Select(r => new SymbolInformation
+                {
+                    ContainerName = r.AdditionalInformation,
+                    Kind = GetSymbolKind(r.Kind),
+                    Location = new Location
+                    {
+                        Uri = ToUri(r.NavigableItem.SourceSpan.File.FilePath),
+                        Range = ToRange(r.NavigableItem.Document.SourceText, r.NavigableItem.SourceSpan.Span)
+                    },
+                    Name = r.Name
+                }));
+        }
+
+        public static async Task FindSymbolsInDocumentAsync(
+            INavigateToSearchService searchService,
+            Document document,
+            string searchPattern,
+            CancellationToken cancellationToken,
+            ImmutableArray<WorkspaceSymbol>.Builder resultsBuilder)
+        {
+            var foundSymbols = await searchService.SearchDocumentAsync(document, searchPattern, cancellationToken);
+
+            resultsBuilder.AddRange(foundSymbols
+                .Select(r => new WorkspaceSymbol
+                {
+                    ContainerName = r.AdditionalInformation,
+                    Kind = GetSymbolKind(r.Kind),
+                    Location = new Location
+                    {
+                        Uri = ToUri(r.NavigableItem.SourceSpan.File.FilePath),
+                        Range = ToRange(r.NavigableItem.Document.SourceText, r.NavigableItem.SourceSpan.Span)
+                    },
+                    Name = r.Name
+                }));
         }
 
         private static SymbolKind GetSymbolKind(string symbolType)

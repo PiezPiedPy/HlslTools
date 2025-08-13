@@ -29,9 +29,25 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
             _bindingResult = bindingResult;
         }
 
+        public List<VariableDeclaratorSyntax> GetTextures()
+        {
+            var textures = new List<VariableDeclaratorSyntax>();
+            foreach (var symbol in _bindingResult.RootBinder.LocalSymbols)
+            {
+                if (symbol.Value.First() is SourceVariableSymbol variable)
+                {
+                    if (variable.ValueType.Name.StartsWith("Texture"))
+                    {
+                        textures.Add(variable.DeclaringSyntaxNodes.First() as VariableDeclaratorSyntax);
+                    }
+                }
+            }
+            return textures;
+        }
+
         public override ISymbol GetDeclaredSymbol(SyntaxNodeBase declaration)
         {
-            var node = (SyntaxNode) declaration;
+            var node = (SyntaxNode)declaration;
 
             var parameter = node as ParameterSyntax;
             if (parameter != null)
@@ -74,7 +90,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
                 return GetDeclaredSymbol(technique);
 
             var toggle = node as ToggleDefinitionSyntax;
-            if(toggle != null)
+            if (toggle != null)
                 return GetDeclaredSymbol(toggle);
 
             return null;
@@ -196,7 +212,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
         public Symbol GetSymbol(ExpressionSyntax expression)
         {
             if (expression is IdentifierNameSyntax && expression.Parent.Kind == SyntaxKind.FunctionInvocationExpression)
-                expression = (ExpressionSyntax) expression.Parent;
+                expression = (ExpressionSyntax)expression.Parent;
 
             var boundExpression = GetBoundExpression(expression);
             return boundExpression == null ? null : GetSymbol(boundExpression);
@@ -207,17 +223,17 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
             switch (expression.Kind)
             {
                 case BoundNodeKind.VariableExpression:
-                    return GetSymbol((BoundVariableExpression) expression);
+                    return GetSymbol((BoundVariableExpression)expression);
                 case BoundNodeKind.NumericConstructorInvocationExpression:
-                    return GetSymbol((BoundNumericConstructorInvocationExpression) expression);
+                    return GetSymbol((BoundNumericConstructorInvocationExpression)expression);
                 case BoundNodeKind.FunctionInvocationExpression:
-                    return GetSymbol((BoundFunctionInvocationExpression) expression);
+                    return GetSymbol((BoundFunctionInvocationExpression)expression);
                 case BoundNodeKind.MethodInvocationExpression:
-                    return GetSymbol((BoundMethodInvocationExpression) expression);
+                    return GetSymbol((BoundMethodInvocationExpression)expression);
                 case BoundNodeKind.FieldExpression:
-                    return GetSymbol((BoundFieldExpression) expression);
+                    return GetSymbol((BoundFieldExpression)expression);
                 case BoundNodeKind.Name:
-                    return GetSymbol((BoundName) expression);
+                    return GetSymbol((BoundName)expression);
                 case BoundNodeKind.IntrinsicGenericMatrixType:
                 case BoundNodeKind.IntrinsicGenericVectorType:
                 case BoundNodeKind.IntrinsicMatrixType:
@@ -354,9 +370,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Compilation
         {
             var token = root.FindTokenContext(position);
             return (from n in token.Parent.AncestorsAndSelf().Cast<SyntaxNode>()
-                let bc = _bindingResult.GetBinder(n)
-                where bc != null
-                select n).FirstOrDefault();
+                    let bc = _bindingResult.GetBinder(n)
+                    where bc != null
+                    select n).FirstOrDefault();
         }
     }
 }
