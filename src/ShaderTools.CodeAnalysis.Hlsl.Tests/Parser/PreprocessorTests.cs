@@ -534,17 +534,21 @@ Texture2D MyTex < TEX_COMP_FULL(dxt5, true) >;
             const string text = @"
 #define FOO(value) #value""else""
 string Bar = FOO(some/thing);
+#define FOO2(x, value, y) #value""else""
+string Bar2 = FOO2(2, some 0, 5);
 ";
             var node = Parse(text);
 
             TestRoundTripping(node, text);
             VerifyDirectivesSpecial(node,
-                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO" });
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "FOO2" });
 
-            Assert.Equal(2, node.ChildNodes.Count);
+            Assert.Equal(3, node.ChildNodes.Count);
             Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[0]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[1]).Kind);
 
-            var varDeclStatement = (VariableDeclarationStatementSyntax)node.ChildNodes[0];
+            var varDeclStatement = (VariableDeclarationStatementSyntax) node.ChildNodes[0];
             Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement.Declaration.Type.Kind);
             Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens.Count);
             Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens[0].Text);
@@ -553,10 +557,118 @@ string Bar = FOO(some/thing);
             Assert.NotNull(varDeclStatement.Declaration.Variables[0].Initializer);
             Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement.Declaration.Variables[0].Initializer.Kind);
 
-            var initializerExpr = (StringLiteralExpressionSyntax) ((EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer).Value;
+            var equalsValueClause = (EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause.Value.Kind);
+            var initializerExpr = (StringLiteralExpressionSyntax) equalsValueClause.Value;
             Assert.Equal(2, initializerExpr.Tokens.Count);
             Assert.Equal("\"some/thing\"", initializerExpr.Tokens[0].Text);
             Assert.Equal("\"else\"", initializerExpr.Tokens[1].Text);
+
+            var varDeclStatement2 = (VariableDeclarationStatementSyntax) node.ChildNodes[1];
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement2.Declaration.Type.Kind);
+            Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement2.Declaration.Type).TypeTokens.Count);
+            Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement2.Declaration.Type).TypeTokens[0].Text);
+            Assert.Equal(1, varDeclStatement2.Declaration.Variables.Count);
+            Assert.Equal("Bar2", varDeclStatement2.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement2.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement2.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause2 = (EqualsValueClauseSyntax) varDeclStatement2.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause2.Value.Kind);
+            var initializerExpr2 = (StringLiteralExpressionSyntax) equalsValueClause2.Value;
+            Assert.Equal(2, initializerExpr2.Tokens.Count);
+            Assert.Equal("\"some 0\"", initializerExpr2.Tokens[0].Text);
+            Assert.Equal("\"else\"", initializerExpr2.Tokens[1].Text);
+        }
+
+        [Fact]
+        public void TestTokenVariadicOperator()
+        {
+            const string text = @"
+#define CTR(...) = {__VA_ARGS__}
+#define CTR3(x, ...) = float3(x, __VA_ARGS__)
+float x CTR(0.0f);
+float3 y CTR(1.0f, 2.0f, 3.0f);
+float3 z CTR3(4.0f, 5.0f, 6.0f);
+#define CTR_WTF(__VA_ARGS__) = float(__VA_ARGS__)
+float3 w CTR_WTF(0.0f);
+#define STRING(x, ...) #__VA_ARGS__
+string Bar = STRING(7, Pass, 8);
+";
+            var node = Parse(text);
+
+            TestRoundTripping(node, text);
+            VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR3" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "CTR_WTF" },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive, Text = "STRING" });
+
+            Assert.Equal(6, node.ChildNodes.Count);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[0]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[1]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[2]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[3]).Kind);
+            Assert.Equal(SyntaxKind.VariableDeclarationStatement, ((SyntaxNode) node.ChildNodes[4]).Kind);
+
+            var varDeclStatement = (VariableDeclarationStatementSyntax) node.ChildNodes[0];
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement.Declaration.Type.Kind);
+            Assert.Equal("float", ((ScalarTypeSyntax) varDeclStatement.Declaration.Type).TypeTokens[0].Text);
+            Assert.Equal(1, varDeclStatement.Declaration.Variables.Count);
+            Assert.Equal("x", varDeclStatement.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause = (EqualsValueClauseSyntax) varDeclStatement.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.ArrayInitializerExpression, equalsValueClause.Value.Kind);
+
+            var varDeclStatement2 = (VariableDeclarationStatementSyntax) node.ChildNodes[1];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement2.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement2.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement2.Declaration.Variables.Count);
+            Assert.Equal("y", varDeclStatement2.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement2.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement2.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause2 = (EqualsValueClauseSyntax) varDeclStatement2.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.ArrayInitializerExpression, equalsValueClause2.Value.Kind);
+
+            var varDeclStatement3 = (VariableDeclarationStatementSyntax) node.ChildNodes[2];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement3.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement3.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement3.Declaration.Variables.Count);
+            Assert.Equal("z", varDeclStatement3.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement3.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement3.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause3 = (EqualsValueClauseSyntax) varDeclStatement3.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause3.Value.Kind);
+
+            var varDeclStatement4 = (VariableDeclarationStatementSyntax) node.ChildNodes[3];
+            Assert.Equal(SyntaxKind.PredefinedVectorType, varDeclStatement4.Declaration.Type.Kind);
+            Assert.Equal("float3", ((VectorTypeSyntax) varDeclStatement4.Declaration.Type).TypeToken.Text);
+            Assert.Equal(1, varDeclStatement4.Declaration.Variables.Count);
+            Assert.Equal("w", varDeclStatement4.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement4.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement4.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause4 = (EqualsValueClauseSyntax) varDeclStatement4.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.NumericConstructorInvocationExpression, equalsValueClause4.Value.Kind);
+
+            var varDeclStatement5 = (VariableDeclarationStatementSyntax) node.ChildNodes[4];
+            Assert.Equal(SyntaxKind.PredefinedScalarType, varDeclStatement5.Declaration.Type.Kind);
+            Assert.Equal(1, ((ScalarTypeSyntax) varDeclStatement5.Declaration.Type).TypeTokens.Count);
+            Assert.Equal("string", ((ScalarTypeSyntax) varDeclStatement5.Declaration.Type).TypeTokens[0].Text);
+            Assert.Equal(1, varDeclStatement5.Declaration.Variables.Count);
+            Assert.Equal("Bar", varDeclStatement5.Declaration.Variables[0].Identifier.Text);
+            Assert.NotNull(varDeclStatement5.Declaration.Variables[0].Initializer);
+            Assert.Equal(SyntaxKind.EqualsValueClause, varDeclStatement5.Declaration.Variables[0].Initializer.Kind);
+
+            var equalsValueClause5 = (EqualsValueClauseSyntax) varDeclStatement5.Declaration.Variables[0].Initializer;
+            Assert.Equal(SyntaxKind.StringLiteralExpression, equalsValueClause5.Value.Kind);
+            var initializerExpr5 = (StringLiteralExpressionSyntax) equalsValueClause5.Value;
+            Assert.Equal(1, initializerExpr5.Tokens.Count);
+            Assert.Equal("\"Pass, 8\"", initializerExpr5.Tokens[0].Text);
         }
 
         [Fact]
@@ -874,13 +986,19 @@ int a;
         public void TestLine()
         {
             const string text = @"
+#line 190
 #line 3 ""a\path\to.hlsl""
-";
+#line 8
+
+#line 30";
             var node = Parse(text);
 
             TestRoundTripping(node, text);
             VerifyDirectivesSpecial(node,
-                new DirectiveInfo { Kind = SyntaxKind.LineDirectiveTrivia, Status = NodeStatus.IsActive, Number = 3, Text = @"a\path\to.hlsl" });
+                new DirectiveInfo { Kind = SyntaxKind.LineDirectiveTrivia, Status = NodeStatus.IsActive, Number = 190 },
+                new DirectiveInfo { Kind = SyntaxKind.LineDirectiveTrivia, Status = NodeStatus.IsActive, Number = 3, Text = @"a\path\to.hlsl" },
+                new DirectiveInfo { Kind = SyntaxKind.LineDirectiveTrivia, Status = NodeStatus.IsActive, Number = 8 },
+                new DirectiveInfo { Kind = SyntaxKind.LineDirectiveTrivia, Status = NodeStatus.IsActive, Number = 30 });
         }
 
         [Fact]
@@ -936,20 +1054,61 @@ int a;
             const string fooText = @"
 #define DECL(n, v) int n = v
 ";
+            const string barText = @"
+#include <foo.hlsl>
+#include ""foo.hlsl""
+
+#include ""foo4.hlsl""
+#include ""foo2.hlsl""
+#include ""sub/foo3.hlsl""
+
+#define BAR 1
+";
             const string text = @"
 float foo;
 #define FOO
 #include <foo.hlsl>
+#include ""foo.hlsl""
+
+#include ""sub/sub2/bar.hlsl""
+#include ""foo2.hlsl""
+
 DECL(i, 2);
 float bar;
 ";
-            var node = Parse(text, null, new InMemoryFileSystem(new Dictionary<string, string>
-            {
-                { "foo.hlsl", fooText }
-            }));
+            var node = Parse(
+                text,
+                new HlslParseOptions
+                {
+                    AdditionalIncludeDirectories = { "test" }
+                },
+                new InMemoryFileSystem(new Dictionary<string, string>
+                {
+                    { Path.Combine("test", "foo.hlsl"), fooText },
+                    { Path.Combine("test2", "foo2.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "foo3.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "sub2", "foo4.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "sub2", "bar.hlsl"), barText }
+                }), Path.Combine("test2", "__Root__.hlsl"));
 
             TestRoundTripping(node, text);
             VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
                 new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
                 new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
                 new DirectiveInfo { Kind = SyntaxKind.FunctionLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive });
@@ -1026,14 +1185,48 @@ float bar;
         [Fact]
         public void TestNegMissingInclude()
         {
-            const string text = @"
-#include <foo.hlsl>
+            const string fooText = @"
+#define DECL(n, v) int n = v
 ";
-            var node = Parse(text, null, new InMemoryFileSystem(new Dictionary<string, string>()));
+            const string barText = @"
+#include ""foo3.hlsl""
+
+#define BAR 1
+";
+            const string text = @"
+float foo;
+#define FOO
+#include ""sub/sub2/bar.hlsl""
+
+#include <foo4.hlsl>
+#include ""foo4.hlsl""
+
+#include <foo2.hlsl>
+";
+            var node = Parse(
+                text,
+                new HlslParseOptions
+                {
+                    AdditionalIncludeDirectories = { "test" }
+                },
+                new InMemoryFileSystem(new Dictionary<string, string>
+                {
+                    { Path.Combine("test", "foo.hlsl"), fooText },
+                    { Path.Combine("test2", "foo2.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "foo3.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "sub2", "foo4.hlsl"), fooText },
+                    { Path.Combine("test2", "sub", "sub2", "bar.hlsl"), barText }
+                }), Path.Combine("test2", "__Root__.hlsl"));
 
             TestRoundTripping(node, text, false);
-            VerifyErrorCode(node, DiagnosticId.IncludeNotFound);
+            VerifyErrorCode(node, DiagnosticId.IncludeNotFound, DiagnosticId.IncludeNotFound, DiagnosticId.IncludeNotFound, DiagnosticId.IncludeNotFound);
             VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
                 new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive });
         }
 
@@ -1072,6 +1265,66 @@ float bar;
         }
 
         [Fact]
+        public void TestPragmaOnce()
+        {
+            const string fooText = @"
+#pragma once
+#define FOO
+float foo = 1.0f;
+";
+            const string barText = @"
+#define BAR
+#include <foo.hlsl>
+#include ""foo.hlsl""
+float bar = 2.0f;
+#pragma once 1
+#pragma once : s
+#pragma once()
+#pragma once
+";
+            const string text = @"
+#include <foo.hlsl>
+#include ""foo.hlsl""
+#include ""bar.hlsl""
+#include <foo.hlsl>
+#include ""foo.hlsl""
+#include ""bar.hlsl""
+float rawr = 3.0f;
+#define RAWR
+";
+            var node = Parse(
+                text,
+                new HlslParseOptions
+                {
+                    AdditionalIncludeDirectories = { "test" }
+                },
+                new InMemoryFileSystem(new Dictionary<string, string>
+                {
+                    { Path.Combine("test", "foo.hlsl"), fooText },
+                    { Path.Combine("test2", "bar.hlsl"), barText }
+                }), Path.Combine("test2", "__Root__.hlsl"));
+
+            TestRoundTripping(node, text);
+            VerifyDirectivesSpecial(node,
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.PragmaDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.PragmaDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.PragmaDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.PragmaDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.PragmaDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.IncludeDirectiveTrivia, Status = NodeStatus.IsActive },
+                new DirectiveInfo { Kind = SyntaxKind.ObjectLikeDefineDirectiveTrivia, Status = NodeStatus.IsActive });
+        }
+
+        [Fact]
         public void HandlesVirtualDirectoryMapping_IncludeIsInRootOfVirtualDirectory_IncludeHandledSuccessfully()
         {
             var includedFileContents = "int Get() { return 42; }";
@@ -1097,7 +1350,7 @@ float bar;
 
             var includeResolver = new IncludeFileResolver(mockFileSystem, options);
 
-            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile);
+            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile, false);
 
             Assert.Equal(includedFileContents, parsedSource.Text.ToString());
         }
@@ -1128,7 +1381,7 @@ float bar;
 
             var includeResolver = new IncludeFileResolver(mockFileSystem, options);
 
-            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile);
+            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile, false);
 
             Assert.Equal(includedFileContents, parsedSource.Text.ToString());
         }
@@ -1162,7 +1415,7 @@ float bar;
 
             var includeResolver = new IncludeFileResolver(mockFileSystem, options);
 
-            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile);
+            var parsedSource = includeResolver.OpenInclude(includeDirective, sourceFile, false);
 
             Assert.Equal(includedFileContents, parsedSource.Text.ToString());
         }
@@ -1174,9 +1427,9 @@ float bar;
             return SyntaxFactory.ParseAllTokens(new SourceFile(SourceText.From(text)));
         }
 
-        private static CompilationUnitSyntax Parse(string text, HlslParseOptions options = null, IIncludeFileSystem fileSystem = null)
+        private static CompilationUnitSyntax Parse(string text, HlslParseOptions options = null, IIncludeFileSystem fileSystem = null, string filePath = "__Root__.hlsl")
         {
-            return SyntaxFactory.ParseCompilationUnit(new SourceFile(SourceText.From(text), "__Root__.hlsl"), options, fileSystem);
+            return SyntaxFactory.ParseCompilationUnit(new SourceFile(SourceText.From(text), filePath), options, fileSystem);
         }
 
         private static void TestRoundTripping(CompilationUnitSyntax node, string text, bool disallowErrors = true)
@@ -1305,36 +1558,12 @@ float bar;
                     case SyntaxKind.LineDirectiveTrivia:
                         var ld = dt as LineDirectiveTriviaSyntax;
 
-                        // default number = 0 - no number
-                        if (exp.Number == -1)
-                        {
-                            Assert.Equal(SyntaxKind.LineKeyword, ld.LineKeyword.Kind);
-                            Assert.Equal(SyntaxKind.DefaultKeyword, ld.Line.Kind);
-                        }
-                        else if (exp.Number == -2)
-                        {
-                            Assert.Equal(SyntaxKind.LineKeyword, ld.LineKeyword.Kind);
-                            //Assert.Equal(SyntaxKind.HiddenKeyword, ld.Line.Kind);
-                        }
-                        else if (exp.Number == 0)
-                        {
-                            Assert.Equal(String.Empty, ld.Line.Text);
-                        }
-                        else if (exp.Number > 0)
-                        {
-                            Assert.Equal(exp.Number, ld.Line.Value); // Number
-                            Assert.Equal(exp.Number, Int32.Parse(ld.Line.Text));
-                        }
+                        Assert.True(exp.Number >= 0);
+                        Assert.Equal(exp.Number, ld.Line.Value); // Number
+                        Assert.Equal(exp.Number, Int32.Parse(ld.Line.Text));
 
-                        if (null == exp.Text)
-                        {
-                            Assert.Equal(SyntaxKind.None, ld.File.Kind);
-                        }
-                        else
-                        {
-                            Assert.NotEqual(SyntaxKind.None, ld.File.Kind);
-                            Assert.Equal(exp.Text, ld.File.Value);
-                        }
+                        Assert.NotEqual(SyntaxKind.None, ld.File.Kind);
+                        Assert.Equal(exp.Text, ld.File.Value);
 
                         break;
                 } // switch

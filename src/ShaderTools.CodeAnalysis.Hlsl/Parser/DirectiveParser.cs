@@ -205,6 +205,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 {
                     paramList.Add(NextToken().WithKind(SyntaxKind.IdentifierToken));
                 }
+                else if (Current.Kind == SyntaxKind.EllipsisToken)
+                {
+                    paramList.Add(Match(SyntaxKind.EllipsisToken));
+                }
                 else
                 {
                     paramList.Add(Match(SyntaxKind.IdentifierToken));
@@ -216,6 +220,10 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
                     switch (Current.Kind)
                     {
+                        case SyntaxKind.EllipsisToken:
+                            paramList.Add(Match(SyntaxKind.EllipsisToken));
+                            break;
+
                         case SyntaxKind.IdentifierToken:
                             paramList.Add(Match(SyntaxKind.IdentifierToken));
                             break;
@@ -268,7 +276,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
         private LineDirectiveTriviaSyntax ParseLineDirective(SyntaxToken hash, SyntaxToken keyword, bool isActive)
         {
             var line = Match(SyntaxKind.IntegerLiteralToken);
-            var filename = Match(SyntaxKind.StringLiteralToken);
+            var filename = Current.Kind != SyntaxKind.EndOfDirectiveToken ? Match(SyntaxKind.StringLiteralToken) : new SyntaxToken(SyntaxKind.EndOfDirectiveToken, true,
+                GetDiagnosticSourceRangeForMissingToken(),
+                GetDiagnosticTextSpanForMissingToken());
             var eod = ParseEndOfDirective(line.IsMissing || !isActive);
 
             return new LineDirectiveTriviaSyntax(hash, keyword, line, filename, eod, isActive);
@@ -292,6 +302,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 body.Add(NextToken());
 
             var eod = ParseEndOfDirective(false);
+
+            if (body.Count > 0 && body.First().ContextualKind == SyntaxKind.OnceKeyword)
+                _lexer.ApplyPragmaOnceDirective();
 
             return new PragmaDirectiveTriviaSyntax(hash, keyword, body, eod, isActive);
         }
@@ -437,7 +450,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             return new ParenthesizedExpressionSyntax(openParen, expression, closeParen);
         }
 
-        private SyntaxToken ParseEndOfDirective(bool ignoreErrors, bool afterLineNumber = false)
+        private SyntaxToken ParseEndOfDirective(bool ignoreErrors)
         {
             var skippedTokens = new List<SyntaxToken>();
 
@@ -448,13 +461,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 skippedTokens = new List<SyntaxToken>(10);
 
                 if (!ignoreErrors)
-                {
-                    var errorCode = DiagnosticId.EndOfPreprocessorLineExpected;
-                    if (afterLineNumber)
-                        errorCode = DiagnosticId.MissingPreprocessorFile;
-
-                    skippedTokens.Add(WithDiagnostic(NextToken().WithoutDiagnostics(), errorCode));
-                }
+                    skippedTokens.Add(WithDiagnostic(NextToken().WithoutDiagnostics(), DiagnosticId.EndOfPreprocessorLineExpected));
 
                 while (Current.Kind != SyntaxKind.EndOfDirectiveToken &&
                        Current.Kind != SyntaxKind.EndOfFileToken)
@@ -492,9 +499,9 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
         {
             var result = Evaluate(expr);
             if (result is bool)
-                return (bool)result;
+                return (bool) result;
             if (result is int)
-                return (int)result != 0;
+                return (int) result != 0;
 
             return false;
         }
@@ -503,7 +510,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
         {
             var result = Evaluate(expr);
             if (result is int)
-                return (int)result;
+                return (int) result;
 
             return 0;
         }
@@ -516,49 +523,49 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             switch (expr.Kind)
             {
                 case SyntaxKind.ParenthesizedExpression:
-                    return Evaluate(((ParenthesizedExpressionSyntax)expr).Expression);
+                    return Evaluate(((ParenthesizedExpressionSyntax) expr).Expression);
                 case SyntaxKind.TrueLiteralExpression:
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.NumericLiteralExpression:
-                    return ((LiteralExpressionSyntax)expr).Token.Value;
+                    return ((LiteralExpressionSyntax) expr).Token.Value;
                 case SyntaxKind.LogicalAndExpression:
                 case SyntaxKind.BitwiseAndExpression:
-                    return EvaluateBool(((BinaryExpressionSyntax)expr).Left) && EvaluateBool(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateBool(((BinaryExpressionSyntax) expr).Left) && EvaluateBool(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.LogicalOrExpression:
                 case SyntaxKind.BitwiseOrExpression:
-                    return EvaluateBool(((BinaryExpressionSyntax)expr).Left) || EvaluateBool(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateBool(((BinaryExpressionSyntax) expr).Left) || EvaluateBool(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.EqualsExpression:
-                    return Equals(Evaluate(((BinaryExpressionSyntax)expr).Left), Evaluate(((BinaryExpressionSyntax)expr).Right));
+                    return Equals(Evaluate(((BinaryExpressionSyntax) expr).Left), Evaluate(((BinaryExpressionSyntax) expr).Right));
                 case SyntaxKind.NotEqualsExpression:
-                    return !Equals(Evaluate(((BinaryExpressionSyntax)expr).Left), Evaluate(((BinaryExpressionSyntax)expr).Right));
+                    return !Equals(Evaluate(((BinaryExpressionSyntax) expr).Left), Evaluate(((BinaryExpressionSyntax) expr).Right));
                 case SyntaxKind.LogicalNotExpression:
-                    return !EvaluateBool(((PrefixUnaryExpressionSyntax)expr).Operand);
+                    return !EvaluateBool(((PrefixUnaryExpressionSyntax) expr).Operand);
                 case SyntaxKind.AddExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) + EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) + EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.SubtractExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) - EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) - EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.MultiplyExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) * EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) * EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.DivideExpression:
                     var divisor = EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                     return (divisor != 0)
                         ? EvaluateInt(((BinaryExpressionSyntax) expr).Left) / divisor
                         : int.MaxValue;
                 case SyntaxKind.GreaterThanExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) > EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) > EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.GreaterThanOrEqualExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) >= EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) >= EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.LessThanExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) < EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) < EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.LessThanOrEqualExpression:
-                    return EvaluateInt(((BinaryExpressionSyntax)expr).Left) <= EvaluateInt(((BinaryExpressionSyntax)expr).Right);
+                    return EvaluateInt(((BinaryExpressionSyntax) expr).Left) <= EvaluateInt(((BinaryExpressionSyntax) expr).Right);
                 case SyntaxKind.IdentifierName:
-                    var id = ((IdentifierNameSyntax)expr).Name.Text;
+                    var id = ((IdentifierNameSyntax) expr).Name.Text;
                     return IsDirectiveDefined(id);
                 case SyntaxKind.FunctionInvocationExpression:
                     // It must be a call to "defined" - that's the only one allowed by the parser.
-                    var functionCall = (FunctionInvocationExpressionSyntax)expr;
-                    var identifierName = ((IdentifierNameSyntax)functionCall.ArgumentList.Arguments[0]).Name;
+                    var functionCall = (FunctionInvocationExpressionSyntax) expr;
+                    var identifierName = ((IdentifierNameSyntax) functionCall.ArgumentList.Arguments[0]).Name;
                     return IsDirectiveDefined(identifierName.Text);
                 default:
                     return false;

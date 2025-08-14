@@ -17,12 +17,14 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
     public sealed partial class HlslLexer : ILexer
     {
         private readonly IIncludeFileResolver _includeFileResolver;
+        private readonly HashSet<string> _includeOnceList = new HashSet<string>();
         private readonly List<SyntaxNode> _leadingTrivia = new List<SyntaxNode>();
         private readonly List<SyntaxNode> _trailingTrivia = new List<SyntaxNode>();
         private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 
         private LexerMode _mode;
         public bool ExpandMacros { get; set; }
+        public void ApplyPragmaOnceDirective() { _includeOnceList.Add(File.FilePath); }
 
         private List<SyntaxToken> _expandedMacroTokens;
         private int _expandedMacroIndex;
@@ -64,7 +66,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             _rootFile = file;
 
             _includeFileResolver = new IncludeFileResolver(
-                includeFileSystem ?? new DummyFileSystem(), 
+                includeFileSystem ?? new DummyFileSystem(),
                 options ?? new HlslParseOptions());
 
             _directives = DirectiveStack.Empty;
@@ -161,7 +163,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                             {
                                 foreach (var childToVisit in nodeToVisit.ChildNodes)
                                 {
-                                    VisitNode((SyntaxNode)childToVisit);
+                                    VisitNode((SyntaxNode) childToVisit);
                                 }
                             }
                         }
@@ -170,7 +172,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                         {
                             VisitNode(originalNode);
                         }
-                        
+
                         leadingTrivia.AddRange(token.LeadingTrivia);
                         token = token.WithLeadingTrivia(leadingTrivia.ToImmutableArray());
                     }
@@ -203,7 +205,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             _diagnostics.Clear();
             while (true)
             {
-                _leadingTrivia.Clear();                
+                _leadingTrivia.Clear();
                 _start = _charReader.Position;
                 ReadTrivia(_leadingTrivia, isTrailing: false);
                 var newLeadingTrivia = _leadingTrivia.ToImmutableArray();
@@ -321,7 +323,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 SourceFile include;
                 try
                 {
-                    include = _includeFileResolver.OpenInclude(includeFilename, _includeStack.Peek().File);
+                    include = _includeFileResolver.OpenInclude(includeFilename, _includeStack.Peek().File, includeDirective.IsAngled);
                     if (include == null)
                     {
                         includeDirective = includeDirective.WithDiagnostic(Diagnostic.Create(HlslMessageProvider.Instance, includeDirective.SourceRange, (int) DiagnosticId.IncludeNotFound, includeFilename));
@@ -338,7 +340,8 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                 if (include != null)
                 {
                     triviaList.Add(includeDirective);
-                    PushIncludeContext(include);
+                    if (!_includeOnceList.Contains(include.FilePath))
+                        PushIncludeContext(include);
                     return false;
                 }
             }
@@ -670,8 +673,24 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
                         ReadNumber();
                     else
                     {
-                        _kind = SyntaxKind.DotToken;
                         NextChar();
+                        if (_charReader.Current == '.')
+                        {
+                            NextChar();
+                            if (_charReader.Current == '.')
+                            {
+                                _kind = SyntaxKind.EllipsisToken;
+                                NextChar();
+                            }
+                            else
+                            {
+                                _kind = SyntaxKind.DotDotToken;
+                            }
+                        }
+                        else
+                        {
+                            _kind = SyntaxKind.DotToken;
+                        }
                     }
                     break;
 
@@ -1273,7 +1292,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
 
                 checked
                 {
-                    val += (long)(c * Math.Pow(8, j));
+                    val += (long) (c * Math.Pow(8, j));
                 }
             }
 
@@ -1303,7 +1322,7 @@ namespace ShaderTools.CodeAnalysis.Hlsl.Parser
             _kind = SyntaxFacts.GetKeywordKind(text);
 
             _contextualKind = (_mode == LexerMode.Directive)
-                ? SyntaxFacts.GetPreprocessorKeywordKind(text) 
+                ? SyntaxFacts.GetPreprocessorKeywordKind(text)
                 : SyntaxFacts.GetContextualKeywordKind(text);
 
             switch (_kind)
