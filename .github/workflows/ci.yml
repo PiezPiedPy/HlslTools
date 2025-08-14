@@ -40,7 +40,7 @@ jobs:
         dotnet test --configuration Release src/ShaderTools.CodeAnalysis.ShaderLab.Tests/ShaderTools.CodeAnalysis.ShaderLab.Tests.csproj
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: VisualStudio
         path: 'src/ShaderTools.Editor.VisualStudio/bin/Release/ShaderTools.Editor.VisualStudio.vsix'
